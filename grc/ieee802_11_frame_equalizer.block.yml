@@ -12,11 +12,11 @@ parameters:
 -   id: freq
     label: Frequency
     dtype: real
-    default: 5.89e9
+    default: 920.5e6
 -   id: bw
     label: Bandwidth
     dtype: real
-    default: 10e6
+    default: 1e6
 -   id: log
     label: Log
     dtype: bool
@@ -33,13 +33,13 @@ parameters:
 inputs:
 -   domain: stream
     dtype: complex
-    vlen: 64
+    vlen: 32
     multiplicity: '1'
 
 outputs:
 -   domain: stream
     dtype: byte
-    vlen: 48
+    vlen: 24
     multiplicity: '1'
 -   domain: message
     id: symbols
