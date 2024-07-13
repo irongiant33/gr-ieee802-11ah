@@ -29,13 +29,13 @@ void ls::equalize(gr_complex* in,
 {
 
     if (n == 0) {
-        std::memcpy(d_H, in, 64 * sizeof(gr_complex));
+        std::memcpy(d_H, in, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
 
     } else if (n == 1) {
         double signal = 0;
         double noise = 0;
-        for (int i = 0; i < 64; i++) {
-            if ((i == 32) || (i < 6) || (i > 58)) {
+        for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
+            if ((i == 16) || (i < 3) || (i > 29)) { //dividing by two gets you the dead DC pilot subcarrier, the other indices correspond to dead lower and upper subcarriers. 3 dead lower ones, 2 dead upper ones
                 continue;
             }
             noise += std::pow(std::abs(d_H[i] - in[i]), 2);
@@ -49,10 +49,10 @@ void ls::equalize(gr_complex* in,
     } else {
 
         int c = 0;
-        for (int i = 0; i < 64; i++) {
-            if ((i == 11) || (i == 25) || (i == 32) || (i == 39) || (i == 53) ||
-                (i < 6) || (i > 58)) {
-                continue;
+        for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
+            if ((i == PILOT1_INDEX) || (i == 16) || (i == PILOT2_INDEX) ||
+                (i < 3) || (i > 29)) {
+                continue; //ignore all pilots and dead subcarriers
             } else {
                 symbols[c] = in[i] / d_H[i];
                 bits[c] = mod->decision_maker(&symbols[c]);

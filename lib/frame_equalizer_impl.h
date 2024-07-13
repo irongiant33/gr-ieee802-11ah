@@ -62,14 +62,14 @@ private:
     double d_bw;                        // Hz
     double d_er;
     double d_epsilon0;
-    gr_complex d_prev_pilots[4];
+    gr_complex d_prev_pilots[NUM_PILOTS];
 
     int d_frame_bytes;
     int d_frame_symbols;
     int d_frame_encoding;
 
-    uint8_t d_deinterleaved[48];
-    gr_complex symbols[48];
+    uint8_t d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+    gr_complex symbols[CODED_BITS_PER_OFDM_SYMBOL];
 
     std::shared_ptr<gr::digital::constellation> d_frame_mod;
     constellation_bpsk::sptr d_bpsk;
@@ -77,7 +77,7 @@ private:
     constellation_16qam::sptr d_16qam;
     constellation_64qam::sptr d_64qam;
 
-    static const int interleaver_pattern[48];
+    static const int interleaver_pattern[CODED_BITS_PER_OFDM_SYMBOL];
 };
 
 } // namespace ieee802_11

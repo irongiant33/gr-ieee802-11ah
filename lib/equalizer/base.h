@@ -18,6 +18,17 @@
 #ifndef INCLUDED_IEEE802_11_EQUALIZER_BASE_H
 #define INCLUDED_IEEE802_11_EQUALIZER_BASE_H
 
+#define SAMPLES_PER_OFDM_SYMBOL 32 //there are 32 HaLow subcarriers
+#define CODED_BITS_PER_OFDM_SYMBOL 24 // there are 26 effective HaLow subcarriers. 2 are pilots, bringing the number of data subcarriers to 24 
+#define NUM_PILOTS 2 //2 HaLow pilots. p.3253 of spec
+#define PILOT1_INDEX 9 //technically -7 in the spec, but that is a range of [-16, 15). We're operating in range of [0, 31). p.3253 of spec
+#define PILOT2_INDEX 23 //technically +7 in the spec, but see above ^. p.3253 of spec.
+#define NUM_BITS_SIG_FIELD 36 //p.3246 of spec
+#define NUM_SIG_FIELD_REPETITIONS 2 //p.3246 of spec
+#define NUM_BITS_PER_REPETITION 6 //p.3246 of spec
+#define MCS_FIRST_BIT_INDEX 7 //p.3246 of spec
+#define MCS_LAST_BIT_INDEX 10 //p.3246 of spec, inclusive
+
 #include <gnuradio/digital/constellation.h>
 #include <gnuradio/gr_complex.h>
 
@@ -41,9 +52,9 @@ public:
     std::vector<gr_complex> get_csi();
 
 protected:
-    static const gr_complex LONG[64];
+    static const gr_complex LONG[SAMPLES_PER_OFDM_SYMBOL];
 
-    gr_complex d_H[64];
+    gr_complex d_H[SAMPLES_PER_OFDM_SYMBOL];
 };
 
 } // namespace equalizer
