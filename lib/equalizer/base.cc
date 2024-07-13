@@ -21,11 +21,10 @@
 
 using namespace gr::ieee802_11::equalizer;
 
-const gr_complex base::LONG[] = { 0,  0,  0,  0,  0,  0,  1,  1,  -1, -1, 1,  1,  -1,
-                                  1,  -1, 1,  1,  1,  1,  1,  1,  -1, -1, 1,  1,  -1,
-                                  1,  -1, 1,  1,  1,  1,  0,  1,  -1, -1, 1,  1,  -1,
-                                  1,  -1, 1,  -1, -1, -1, -1, -1, 1,  1,  -1, -1, 1,
-                                  -1, 1,  -1, 1,  1,  1,  1,  0,  0,  0,  0,  0 };
+const gr_complex base::LONG[] = {  0,  0,  0,  1,  1, -1, -1,  1,  1, -1,
+                                   1, -1,  1,  1,  1,  1,  0,  1, -1, -1, //make sure 0 is in center
+                                   1, -1,  1,  1,  1,  1,  1,  1, -1, -1,
+                                   0,  0};//maybe this is the first 48 (24 in the case of HaLow) values from the polarity field below, after the SIG
 
 const gr_complex base::POLARITY[127] = {
     1,  1,  1,  1,  -1, -1, -1, 1,  -1, -1, -1, -1, 1,  1,  -1, 1,  -1, -1, 1, 1,  -1, 1,
@@ -34,7 +33,7 @@ const gr_complex base::POLARITY[127] = {
     1,  -1, 1,  -1, 1,  1,  -1, -1, -1, 1,  1,  -1, -1, -1, -1, 1,  -1, -1, 1, -1, 1,  1,
     1,  1,  -1, 1,  -1, 1,  -1, 1,  -1, -1, -1, -1, -1, 1,  -1, 1,  1,  -1, 1, -1, 1,  1,
     1,  -1, -1, 1,  -1, -1, -1, 1,  1,  1,  -1, -1, -1, -1, -1, -1, -1
-};
+}; //original from p.2826
 
 std::vector<gr_complex> base::get_csi()
 {
