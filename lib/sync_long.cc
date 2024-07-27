@@ -101,9 +101,9 @@ public:
 
         case SYNC:
             d_fir.filterN(
-                d_correlation, in, std::min(SYNC_LENGTH, std::max(ninput - 63, 0)));
+                d_correlation, in, std::min(SYNC_LENGTH, std::max(ninput - (SAMPLES_PER_OFDM_SYMBOL - 1), 0)));
 
-            while (i + 63 < ninput) {
+            while (i + (SAMPLES_PER_OFDM_SYMBOL - 1) < ninput) {
 
                 d_cor.push_back(pair<gr_complex, int>(d_correlation[i], d_offset));
 
@@ -136,7 +136,7 @@ public:
                                  pmt::string_to_symbol(name()));
                 }
 
-                if (rel >= 0 && (rel < 128 || ((rel - 128) % 80) > 15)) {
+                if (rel >= 0 && (rel < 128 || ((rel - 128) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > 15)) {
                     out[o] = in_delayed[i] * exp(gr_complex(0, d_offset * d_freq_offset));
                     o++;
                 }
@@ -149,7 +149,7 @@ public:
 
         case RESET: {
             while (o < noutput) {
-                if (((d_count + o) % 64) == 0) {
+                if (((d_count + o) % SAMPLES_PER_OFDM_SYMBOL) == 0) {
                     d_offset = 0;
                     d_state = SYNC;
                     break;
@@ -177,8 +177,8 @@ public:
         // in sync state we need at least a symbol to correlate
         // with the pattern
         if (d_state == SYNC) {
-            ninput_items_required[0] = 64;
-            ninput_items_required[1] = 64;
+            ninput_items_required[0] = SAMPLES_PER_OFDM_SYMBOL;
+            ninput_items_required[1] = SAMPLES_PER_OFDM_SYMBOL;
 
         } else {
             ninput_items_required[0] = noutput_items;
@@ -214,16 +214,16 @@ public:
                 int diff = abs(get<1>(vec[i]) - get<1>(vec[k]));
                 if (diff == 64) {
                     d_frame_start = min(get<1>(vec[i]), get<1>(vec[k]));
-                    d_freq_offset = arg(first * conj(second)) / 64;
+                    d_freq_offset = arg(first * conj(second)) / SAMPLES_PER_OFDM_SYMBOL;
                     // nice match found, return immediately
                     return;
 
-                } else if (diff == 63) {
+                } else if (diff == (SAMPLES_PER_OFDM_SYMBOL + 1)) {
                     d_frame_start = min(get<1>(vec[i]), get<1>(vec[k]));
-                    d_freq_offset = arg(first * conj(second)) / 63;
-                } else if (diff == 65) {
+                    d_freq_offset = arg(first * conj(second)) / (SAMPLES_PER_OFDM_SYMBOL - 1);
+                } else if (diff == (SAMPLES_PER_OFDM_SYMBOL + 1)) {
                     d_frame_start = min(get<1>(vec[i]), get<1>(vec[k]));
-                    d_freq_offset = arg(first * conj(second)) / 65;
+                    d_freq_offset = arg(first * conj(second)) / (SAMPLES_PER_OFDM_SYMBOL + 1);
                 }
             }
         }

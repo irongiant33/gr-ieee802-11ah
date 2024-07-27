@@ -25,6 +25,18 @@
 
 using gr::ieee802_11::Encoding;
 
+#define SAMPLES_PER_OFDM_SYMBOL 32 //there are 32 HaLow subcarriers
+#define CODED_BITS_PER_OFDM_SYMBOL 24 // there are 26 effective HaLow subcarriers. 2 are pilots, bringing the number of data subcarriers to 24 
+#define NUM_PILOTS 2 //2 HaLow pilots. p.3253 of spec
+#define PILOT1_INDEX 9 //technically -7 in the spec, but that is a range of [-16, 15). We're operating in range of [0, 31). p.3253 of spec
+#define PILOT2_INDEX 23 //technically +7 in the spec, but see above ^. p.3253 of spec.
+#define NUM_BITS_SIG_FIELD 36 //p.3246 of spec
+#define NUM_SIG_FIELD_REPETITIONS 2 //p.3246 of spec
+#define NUM_BITS_PER_REPETITION 6 //p.3246 of spec
+#define MCS_FIRST_BIT_INDEX 7 //p.3246 of spec
+#define MCS_LAST_BIT_INDEX 10 //p.3246 of spec, inclusive
+#define SAMPLES_PER_GI 16 //??? I think this is just SAMPLES_PER_OFDM_SYMBOL plus the number of samples with the guard interval length. For 802.11a is 3.2us (64 samples at 20MHz) plus 0.8us GI which yields 80 samples
+
 #define MAX_PAYLOAD_SIZE 1500
 #define MAX_PSDU_SIZE (MAX_PAYLOAD_SIZE + 28) // MAC, CRC
 #define MAX_SYM (((16 + 8 * MAX_PSDU_SIZE + 6) / 24) + 1)
