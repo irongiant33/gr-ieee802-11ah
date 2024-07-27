@@ -78,7 +78,7 @@ public:
                     } else {
                         d_state = COPY;
                         d_copied = 0;
-                        d_freq_offset = arg(in_abs[i]) / 16; // 16 = samples per GI?
+                        d_freq_offset = arg(in_abs[i]) / SAMPLES_PER_GI;
                         d_plateau = 0;
                         insert_tag(nitems_written(0), d_freq_offset, nitems_read(0) + i);
                         dout << "SHORT Frame!" << std::endl;
@@ -105,7 +105,7 @@ public:
                     } else if (d_copied > MIN_GAP) {
                         d_copied = 0;
                         d_plateau = 0;
-                        d_freq_offset = arg(in_abs[o]) / 16; //16 = samples per GI?
+                        d_freq_offset = arg(in_abs[o]) / SAMPLES_PER_GI; //16 = samples per GI?
                         insert_tag(
                             nitems_written(0) + o, d_freq_offset, nitems_read(0) + o);
                         dout << "SHORT Frame!" << std::endl;

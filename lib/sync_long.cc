@@ -136,7 +136,7 @@ public:
                                  pmt::string_to_symbol(name()));
                 }
 
-                if (rel >= 0 && (rel < 128 || ((rel - 128) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > 15)) {
+                if (rel >= 0 && (rel < 128 || ((rel - 128) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > (SAMPLES_PER_GI - 1))) {
                     out[o] = in_delayed[i] * exp(gr_complex(0, d_offset * d_freq_offset));
                     o++;
                 }

@@ -35,13 +35,13 @@ using gr::ieee802_11::Encoding;
 #define NUM_BITS_PER_REPETITION 6 //p.3246 of spec
 #define MCS_FIRST_BIT_INDEX 7 //p.3246 of spec
 #define MCS_LAST_BIT_INDEX 10 //p.3246 of spec, inclusive
-#define SAMPLES_PER_GI 16 //??? I think this is just SAMPLES_PER_OFDM_SYMBOL plus the number of samples with the guard interval length. For 802.11a is 3.2us (64 samples at 20MHz) plus 0.8us GI which yields 80 samples
+#define SAMPLES_PER_GI 8 //for ieee802.11a/g, the GI is 0.8us. For 802.11ah, GI is 8us
 
 #define MAX_PAYLOAD_SIZE 1500
-#define MAX_PSDU_SIZE (MAX_PAYLOAD_SIZE + 28) // MAC, CRC
-#define MAX_SYM (((16 + 8 * MAX_PSDU_SIZE + 6) / 24) + 1)
-#define MAX_BITS_PER_SYM 288
-#define MAX_ENCODED_BITS ((16 + 8 * MAX_PSDU_SIZE + 6) * 2 + MAX_BITS_PER_SYM)
+#define MAX_PSDU_SIZE (MAX_PAYLOAD_SIZE + 28) // MAC, CRC. What is 28??
+#define MAX_SYM (((16 + 8 * MAX_PSDU_SIZE + 6) / 24) + 1) //16 is samples per GI? What is 24? 
+#define MAX_BITS_PER_SYM 288 //is this true for HaLow?
+#define MAX_ENCODED_BITS ((16 + 8 * MAX_PSDU_SIZE + 6) * 2 + MAX_BITS_PER_SYM) //is 16 samples per GI? 
 
 #define dout d_debug&& std::cout
 #define mylog(...)                      \

@@ -161,11 +161,11 @@ int frame_equalizer_impl::general_work(int noutput_items,
         // compensate sampling offset
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0,
-                                                2 * M_PI * d_current_symbol * 80 * //what is 80?
+                                                2 * M_PI * d_current_symbol * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI) * 
                                                     (d_epsilon0 + d_er) * (i - 32) / SAMPLES_PER_OFDM_SYMBOL)); //what is 32? Half of the 802.11a number of subcarriers?
         }
 
-        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; //where does polarity come from?
+        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127];
 
         double beta;
         if (d_current_symbol < 2) {
@@ -180,13 +180,13 @@ int frame_equalizer_impl::general_work(int noutput_items,
         double er = arg((conj(d_prev_pilots[1]) * current_symbol[PILOT1_INDEX] * p) +
                         (conj(d_prev_pilots[2]) * current_symbol[PILOT2_INDEX] * p)); //unsure whether to multiply by p or -p?
 
-        er *= d_bw / (2 * M_PI * d_freq * 80); //again, what is 80?
+        er *= d_bw / (2 * M_PI * d_freq * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI));
 
         if (d_current_symbol < 2) {
             d_prev_pilots[0] = current_symbol[PILOT1_INDEX];
             d_prev_pilots[1] = -current_symbol[PILOT2_INDEX];
         } else {
-            d_prev_pilots[0] = current_symbol[PILOT1_INDEX] * p;
+            d_prev_pilots[0] = current_symbol[PILOT1_INDEX] * p; //unsure whether to multiply by p or -p?
             d_prev_pilots[1] = current_symbol[PILOT2_INDEX] * p;
         }
 
