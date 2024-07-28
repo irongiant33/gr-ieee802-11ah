@@ -254,6 +254,7 @@ sync_long::sptr sync_long::make(unsigned int sync_length, bool log, bool debug)
     return gnuradio::get_initial_sptr(new sync_long_impl(sync_length, log, debug));
 }
 
+//where does this array come from?
 const std::vector<gr_complex> sync_long_impl::LONG = {
     gr_complex(-0.0455, -1.0679), gr_complex(0.3528, -0.9865),
     gr_complex(0.8594, 0.7348),   gr_complex(0.1874, 0.2475),
