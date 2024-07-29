@@ -20,7 +20,7 @@
 
 #include <gnuradio/digital/constellation.h>
 #include <gnuradio/gr_complex.h>
-#include "utils.h"
+#include "../utils.h"
 
 namespace gr {
 namespace ieee802_11 {
