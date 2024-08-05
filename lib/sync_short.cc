@@ -22,8 +22,8 @@
 
 using namespace gr::ieee802_11;
 
-static const int MIN_GAP = 480;
-static const int MAX_SAMPLES = 540 * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI);
+static const int MIN_GAP = 480; // what is the equivalent for HaLow?
+static const int MAX_SAMPLES = 540 * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI); // what is the equivalent for HaLow?
 
 class sync_short_impl : public sync_short
 {
