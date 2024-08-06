@@ -150,11 +150,12 @@ int frame_equalizer_impl::general_work(int noutput_items,
             dout << "epsilon: " << d_epsilon0 << std::endl;
         }
 
-        // not interesting -> skip
+        // not interesting -> skip. Why is this not interesting? uncommenting for now because I think it terminates too early for HaLow
+        /*
         if (d_current_symbol > (d_frame_symbols + 2)) {
             i++;
             continue;
-        }
+        }*/
 
         std::memcpy(current_symbol, in + i * SAMPLES_PER_OFDM_SYMBOL, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
 
@@ -165,7 +166,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
                                                     (d_epsilon0 + d_er) * (i - 32) / SAMPLES_PER_OFDM_SYMBOL)); //what is 32? Half of the 802.11a number of subcarriers?
         }
 
-        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127];
+        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // does 127 have to do with polarity? anything to do with line 141 on sync long? 
 
         double beta;
         if (d_current_symbol < 2) {
@@ -202,9 +203,11 @@ int frame_equalizer_impl::general_work(int noutput_items,
             d_er = (1 - alpha) * d_er + alpha * er;
         }
 
-        // do equalization
+        // do equalization. this is what sends bytes downstream to WiFi Decode MAC
         d_equalizer->equalize(
             current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, d_frame_mod);
+
+        dout << "d_current_symbol: " << d_current_symbol << " i: " << i << std::endl;
 
         // signal field, it takes 6 OFDM symbols to make the SIG field
         if (d_current_symbol >= 2 && d_current_symbol < 8) {

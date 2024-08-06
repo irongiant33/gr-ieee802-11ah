@@ -21,7 +21,7 @@ parameters:
 inputs:
 -   domain: stream
     dtype: byte
-    vlen: 48
+    vlen: 24
 
 outputs:
 -   domain: message

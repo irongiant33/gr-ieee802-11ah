@@ -137,7 +137,7 @@ public:
                                  pmt::string_to_symbol(name()));
                 }
 
-                // 128 is 2*64. What is this from?
+                // 128 is 2*64. What is this from? Also see this on line 168 of frame_equalizer. It could have to do with polarity.
                 if (rel >= 0 && (rel < 128 || ((rel - 128) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > (SAMPLES_PER_GI - 1))) {
                     out[o] = in_delayed[i] * exp(gr_complex(0, d_offset * d_freq_offset));
                     o++;

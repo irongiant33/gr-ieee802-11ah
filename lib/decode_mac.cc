@@ -33,7 +33,7 @@ class decode_mac_impl : public decode_mac
 public:
     decode_mac_impl(bool log, bool debug)
         : block("decode_mac",
-                gr::io_signature::make(1, 1, 48),
+                gr::io_signature::make(1, 1, CODED_BITS_PER_OFDM_SYMBOL),
                 gr::io_signature::make(0, 0, 0)),
           d_log(log),
           d_debug(debug),
@@ -102,20 +102,20 @@ public:
             if (copied < d_frame.n_sym) {
                 dout << "copy one symbol, copied " << copied << " out of "
                      << d_frame.n_sym << std::endl;
-                std::memcpy(d_rx_symbols + (copied * 48), in, 48);
+                std::memcpy(d_rx_symbols + (copied * CODED_BITS_PER_OFDM_SYMBOL), in, CODED_BITS_PER_OFDM_SYMBOL);
                 copied++;
 
                 if (copied == d_frame.n_sym) {
                     dout << "received complete frame - decoding" << std::endl;
                     decode();
-                    in += 48;
+                    in += CODED_BITS_PER_OFDM_SYMBOL;
                     i++;
                     d_frame_complete = true;
                     break;
                 }
             }
 
-            in += 48;
+            in += CODED_BITS_PER_OFDM_SYMBOL;
             i++;
         }
 
@@ -127,7 +127,7 @@ public:
     void decode()
     {
 
-        for (int i = 0; i < d_frame.n_sym * 48; i++) {
+        for (int i = 0; i < d_frame.n_sym * CODED_BITS_PER_OFDM_SYMBOL; i++) {
             for (int k = 0; k < d_ofdm.n_bpsc; k++) {
                 d_rx_bits[i * d_ofdm.n_bpsc + k] = !!(d_rx_symbols[i] & (1 << k));
             }
@@ -142,7 +142,7 @@ public:
         boost::crc_32_type result;
         result.process_bytes(out_bytes + 2, d_frame.psdu_size);
         if (result.checksum() != 558161692) {
-            dout << "checksum wrong -- dropping" << std::endl;
+            dout << "checksum wrong -- dropping. expected 558161692 got: " << result.checksum() << std::endl;
             return;
         }
 
@@ -243,7 +243,7 @@ private:
 
     viterbi_decoder d_decoder;
 
-    uint8_t d_rx_symbols[48 * MAX_SYM];
+    uint8_t d_rx_symbols[CODED_BITS_PER_OFDM_SYMBOL * MAX_SYM];
     uint8_t d_rx_bits[MAX_ENCODED_BITS];
     uint8_t d_deinterleaved_bits[MAX_ENCODED_BITS];
     uint8_t out_bytes[MAX_PSDU_SIZE + 2]; // 2 for signal field
