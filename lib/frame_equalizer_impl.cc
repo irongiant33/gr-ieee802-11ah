@@ -166,10 +166,10 @@ int frame_equalizer_impl::general_work(int noutput_items,
                                                     (d_epsilon0 + d_er) * (i - 32) / SAMPLES_PER_OFDM_SYMBOL)); //what is 32? Half of the 802.11a number of subcarriers?
         }
 
-        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // does 127 have to do with polarity? anything to do with line 141 on sync long? 
+        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // why subtract 2 here? does 127 have to do with polarity? anything to do with line 141 on sync long? 
 
         double beta;
-        if (d_current_symbol < 2) {
+        if (d_current_symbol < 8) { //used to be 2. assuming 8 b/c is 4+4 (4 symbols for STF, 4 symbols for LTF1
             beta = arg(current_symbol[PILOT2_INDEX]
                        - current_symbol[PILOT1_INDEX]); //unsure whether to add/subtract the pilot?
 
@@ -183,7 +183,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         er *= d_bw / (2 * M_PI * d_freq * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI));
 
-        if (d_current_symbol < 2) {
+        if (d_current_symbol < 8) { //used to be 2. assuming 8 b/c is 4+4 (4 symbols for STF, 4 symbols for LTF1)
             d_prev_pilots[0] = current_symbol[PILOT1_INDEX];
             d_prev_pilots[1] = -current_symbol[PILOT2_INDEX];
         } else {
@@ -197,25 +197,26 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         // update estimate of residual frequency offset
-        if (d_current_symbol >= 2) {
+        if (d_current_symbol >= 8) {
 
             double alpha = 0.1;
             d_er = (1 - alpha) * d_er + alpha * er;
         }
 
-        // do equalization. this is what sends bytes downstream to WiFi Decode MAC
+        // do equalization. this is what sends bytes downstream to WiFi Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
         d_equalizer->equalize(
             current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, d_frame_mod);
 
-        dout << "d_current_symbol: " << d_current_symbol << " i: " << i << std::endl;
+        dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
 
         // signal field, it takes 6 OFDM symbols to make the SIG field
-        if (d_current_symbol >= 2 && d_current_symbol < 8) {
+        if (d_current_symbol >= 8 && d_current_symbol < 14) {
             o++;
         }
-        if (d_current_symbol == 7){
-
-            if (decode_signal_field(out + o * CODED_BITS_PER_OFDM_SYMBOL)) {
+        if (d_current_symbol == 14){ //wait until you've processed all 6 symbols of the SIG field
+            dout << "o: " << o << std::endl;
+            //add a check to make sure that o is greater than 6?
+            if (decode_signal_field(out + (o - 6) * CODED_BITS_PER_OFDM_SYMBOL)) { //point to the beginning of the SIG field. Skip all 8 symbols of the LTF and STF.
 
                 pmt::pmt_t dict = pmt::make_dict();
                 dict = pmt::dict_add(
@@ -248,7 +249,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         // data
-        if (d_current_symbol >= 8) {
+        if (d_current_symbol >= 14) {
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
             message_port_pub(
@@ -278,12 +279,16 @@ bool frame_equalizer_impl::decode_signal_field(uint8_t* rx_bits)
 
 void frame_equalizer_impl::deinterleave(uint8_t* rx_bits)
 {
-    for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
-        d_deinterleaved[i] = rx_bits[interleaver_pattern[i]];
+    //why does iteration 1 invoke undefined behavior?
+    for(int j = 0; j < 6; j++){ //because there are 6 OFDM symbols in rx_bits (or at least there should be)
+        for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
+            d_deinterleaved[j*CODED_BITS_PER_OFDM_SYMBOL + i] = rx_bits[j*CODED_BITS_PER_OFDM_SYMBOL + interleaver_pattern[i]];
+        }
     }
 }
 
 //p.3246 wifi spec
+//should you add a parameter here to force check the size of decoded_bits? Right now it isn't clear how many you're getting
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 {
 
@@ -291,7 +296,33 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     int frame_bit_index = 0;
     d_frame_bytes = 0;
     bool parity = false;
-    for (int i = 0; i < NUM_BITS_SIG_FIELD * NUM_SIG_FIELD_REPETITIONS; i++) {
+    std::unique_ptr<char[]> sig_field(new char[(NUM_BITS_IN_HALOW_SIG_FIELD * NUM_SIG_FIELD_REPETITIONS)/8]); //8 bits per byte
+    char byte = '\0';
+    if(decoded_bits[0])
+    {
+        byte = 1 << 7;
+    }
+    int byte_counter = 0;
+
+    //each SIG field is repeated before the next is sent. So first 6 bits should be equal to the next 6, repeated 6 times to yield 72 bits
+    for (int i = 0; i < NUM_BITS_IN_HALOW_SIG_FIELD * NUM_SIG_FIELD_REPETITIONS; i++) {
+        if(i % 8 == 0 && i != 0) //8 bits per byte
+        {
+            sig_field[byte_counter] = byte;
+            byte = '\0';
+            if(decoded_bits[i])
+            {
+                byte = 1 << 7;
+            }
+            byte_counter++;
+        }
+        else
+        {
+            if(decoded_bits[i])
+            {
+                byte = byte | (1 << (7 - (i % 8)));
+            }
+        }
         parity ^= decoded_bits[i];
 
         //only accounts for the first repetition
@@ -306,6 +337,18 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
             frame_bit_index++;
         }*/
     }
+    sig_field[byte_counter] = byte;
+    byte_counter++;
+    byte = '\0';
+
+    //print out the hex representation of the signal field
+    for(int i = 0; i < byte_counter; i++)
+    {
+        byte = sig_field[i];
+        dout << std::hex << ((byte & 0xF0) >> 4) << " ";
+        dout << std::hex << ((byte & 0x0F)) << " ";
+    }
+    dout << std::endl;
 
     /* unused with HaLow, CRC instead
     if (parity != decoded_bits[17]) {

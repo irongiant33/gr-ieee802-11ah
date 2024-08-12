@@ -36,22 +36,22 @@ ofdm_param::ofdm_param(Encoding e)
     switch (e) {
     case BPSK_1_2:
         n_bpsc = 1;
-        n_cbps = 48;
-        n_dbps = 24;
-        rate_field = 0x0D; // 0b00001101
+        n_cbps = 24;
+        n_dbps = 12;
+        rate_field = 0x00; // i.e. MCS 0b00000000
         break;
 
     case BPSK_3_4:
         n_bpsc = 1;
-        n_cbps = 48;
-        n_dbps = 36;
+        n_cbps = 24;
+        n_dbps = 18;
         rate_field = 0x0F; // 0b00001111
         break;
 
     case QPSK_1_2:
         n_bpsc = 2;
-        n_cbps = 96;
-        n_dbps = 48;
+        n_cbps = 48;
+        n_dbps = 24;
         rate_field = 0x05; // 0b00000101
         break;
 
@@ -113,6 +113,7 @@ frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
     psdu_size = psdu_length;
 
     // number of symbols (17-11)
+    //where does 16 come from? Assuming that 8*psdu_size is just converting PSDU size from bytes to bits. Where does 6 come from? Must be in the data field because the SIG field gets passed a psdu_length of 0.
     n_sym = (int)ceil((16 + 8 * psdu_size + 6) / (double)ofdm.n_dbps);
 
     n_data_bits = n_sym * ofdm.n_dbps;
