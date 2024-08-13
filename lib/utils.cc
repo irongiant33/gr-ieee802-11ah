@@ -112,13 +112,15 @@ frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
 
     psdu_size = psdu_length;
 
-    // number of symbols (17-11)
-    //where does 16 come from? Assuming that 8*psdu_size is just converting PSDU size from bytes to bits. Where does 6 come from? Must be in the data field because the SIG field gets passed a psdu_length of 0.
+    // number of symbols (EQN17-11, page 2817 of spec for 802.11a/g). Possibly 16 is the number of SIG bits and 8 is the number of pad/tail bits?
+    // number of symbols p.3248 "Data Field" for HaLow OR EQN23-65 on p.3302 OR EQN 23-66 on p.3303
     n_sym = (int)ceil((16 + 8 * psdu_size + 6) / (double)ofdm.n_dbps);
 
-    n_data_bits = n_sym * ofdm.n_dbps;
+    n_data_bits = 72; //hardcoding this for now to see what happens
+    //n_data_bits = n_sym * ofdm.n_dbps;
 
-    // number of padding bits (17-13)
+    // number of padding bits (EQN17-13, page 2817 of spec for 802.11a/g)
+    // number of symbols p.3248 "Data Field" for HaLow
     n_pad = n_data_bits - (16 + 8 * psdu_size + 6);
 
     n_encoded_bits = n_sym * ofdm.n_cbps;

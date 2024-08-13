@@ -68,7 +68,7 @@ private:
     int d_frame_symbols;
     int d_frame_encoding;
 
-    uint8_t d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+    uint8_t d_deinterleaved[6*CODED_BITS_PER_OFDM_SYMBOL]; //because there are 6 OFDM frames in the SIG field
     gr_complex symbols[CODED_BITS_PER_OFDM_SYMBOL];
 
     std::shared_ptr<gr::digital::constellation> d_frame_mod;

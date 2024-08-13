@@ -271,7 +271,30 @@ bool frame_equalizer_impl::decode_signal_field(uint8_t* rx_bits)
     static ofdm_param ofdm(BPSK_1_2);
     static frame_param frame(ofdm, 0);
 
+    dout << "number of data bits in frame: 0x" << frame.n_data_bits << std::endl;
     deinterleave(rx_bits);
+
+    // loop over all deinterleaved bytes and print them out to see if there are similarities before decoding
+    dout << "Post deinterleaved: ";
+    for(int i = 0; i < 18; i++)
+    {
+        char byte = '\0';
+        for(int j = 0; j < 8; j++)
+        {
+            if(d_deinterleaved[i*8 + j])
+            {
+                byte = byte | (1 << (7 - j));
+            }
+        }
+        dout << std::hex << ((byte & 0xF0) >> 4) << " ";
+        dout << std::hex << ((byte & 0x0F)) << " ";
+    }
+    dout << std::endl;
+
+    //handle the repetitions here _before_ decoding
+    // ???
+
+    //replace viterbi decoder with BCC decoder
     uint8_t* decoded_bits = d_decoder.decode(&ofdm, &frame, d_deinterleaved);
 
     return parse_signal(decoded_bits);
