@@ -47,8 +47,9 @@ public:
           d_debug(debug),
           d_offset(0),
           d_state(SYNC),
-          SYNC_LENGTH(sync_length) //usually 320 samples for ieee802.11a/g (8us for the short field, 8us for the long field @20Mhz)
-                                   //also 320 samples for ieee802.11ah (160us for short field, 160us for long field @1MHz)
+          SYNC_LENGTH(sync_length)//sync_len is the number of samples from the preambule start (1st STS complex symbol) to the end of the second LTS (last complex symbol of the second LTS).
+                                    //in a first instance, we want to avoid changing the algorithm for peak detection. Therefore we need to make sure only 2 LTS are contained in the 
+                                    //sync_length. This means sync_length should be 240 (- min_plateau) samples long.
     {
 
         set_tag_propagation_policy(block::TPP_DONT);
@@ -137,9 +138,11 @@ public:
                                  pmt::string_to_symbol(name()));
                 }
 
-                // 128 is 2*64. What is this from? Also see this on line 168 of frame_equalizer. It could have to do with polarity.
-                if (rel >= 0 && (rel < 128 || ((rel - 128) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > (SAMPLES_PER_GI - 1))) {
-                    out[o] = in_delayed[i] * exp(gr_complex(0, d_offset * d_freq_offset));
+                // send LTFs + SIG + DATA downstream with GIs filtered out
+                // TODO : implement short GI
+                if (rel >= 0 && (rel < 2*SAMPLES_PER_OFDM_SYMBOL || ((rel - 2*SAMPLES_PER_OFDM_SYMBOL) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > (SAMPLES_PER_GI - 1))) {
+                    //we mulitply by +d_freq_offset because we take conj of the second peak for freq offset computation (and not conj of first one)
+                    out[o] = in_delayed[i] * exp(gr_complex(0, d_freq_offset * d_offset));
                     o++;
                 }
 
