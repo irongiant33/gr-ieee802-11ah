@@ -203,42 +203,83 @@ int frame_equalizer_impl::general_work(int noutput_items,
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0,
                                                 2 * M_PI * d_current_symbol * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI) * 
-                                                    (d_epsilon0 + d_er) * (i - 32) / SAMPLES_PER_OFDM_SYMBOL)); //what is 32? Half of the 802.11a number of subcarriers?
+                                                    (d_epsilon0 + d_er) * (i - SAMPLES_PER_OFDM_SYMBOL / 2) / SAMPLES_PER_OFDM_SYMBOL));
+            
+            //@irongiant33 To answer your question "what is 32? Half of the 802.11a number of subcarriers?". The "32" seem indeed to come from the number of subcarriers in 802.11a. The sampling offset compensation performed is described in Equation 7 of paper "Frequency Offset Estimation and Correction in the IEEE 802.11a WLAN" (see https://openofdm.readthedocs.io/en/latest/_downloads/vtc04_freq_offset.pdf). The number (i - 32) actually corresponds to the k variable that ranges from -26 to 26. Consequently, you should replace "32" with "SAMPLES_PER_OFDM_SYMBOL/2" in your code.
+            
+        }
+        
+
+        //old
+        //gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // why subtract 2 here? does 127 have to do with polarity? anything to do with line 141 on sync long? 
+
+        //debug
+        //dout << "After CSO compensation \n";
+        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
+        
+        /*
+        Below you compute beta according to Equation (8).
+        */
+
+        //gr_complex beta_prev = p[0] * current_symbol[PILOT1_INDEX] * conj(d_Qi[0]) + p[1] * current_symbol[PILOT2_INDEX] * conj(d_Qi[1]);
+        double beta = 0;
+        if(d_current_symbol != 0){
+            beta = arg( pilot_mapping[0] * current_symbol[PILOT1_INDEX] * conj(d_equalizer->get_csi_at(PILOT1_INDEX)) + 
+                        pilot_mapping[1] * current_symbol[PILOT2_INDEX] * conj(d_equalizer->get_csi_at(PILOT2_INDEX)) );
         }
 
-        gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // why subtract 2 here? does 127 have to do with polarity? anything to do with line 141 on sync long? 
+        //debug
+        //dout << "Channel at i = 0 " <<  d_Qi[0] << ", at i = 1 " << d_Qi[1] << std::endl;
+        //dout << "Pilot 0 is " << current_symbol[PILOT1_INDEX] / d_Qi[0] <<", pilot 1 is " << current_symbol[PILOT2_INDEX]/ d_Qi[1] << std::endl;
+        //dout << "Polarity pilot 0 is " << p[0] << " , polarity pilot 1 is " << p[1] << std::endl;
+        //dout << "Epsilon is " << epsilon << std::endl;
+        //dout << "Beta is " << beta << std::endl;
+        //dout << "Beta prev is " << beta_prev << std::endl;
 
-        double beta;
-        if (d_current_symbol < 8) { //used to be 2. assuming 8 b/c is 4+4 (4 symbols for STF, 4 symbols for LTF1
-            beta = arg(current_symbol[PILOT2_INDEX]
-                       - current_symbol[PILOT1_INDEX]); //unsure whether to add/subtract the pilot?
+        //old
+        /*
+        if (d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1) {//if we are still in LTF1
+            
+            beta = arg(- current_symbol[PILOT1_INDEX]
+                       - current_symbol[PILOT2_INDEX]);
 
-        } else {
-            beta = arg((current_symbol[PILOT2_INDEX] * p) + 
-                       (current_symbol[PILOT1_INDEX] * p)); //unsure whether to multiply by p or -p?
+        } else {//if we are at nth symbol after LTF1
+            //use the pilots carriers corrected by polarity (supposing no travelling pilots)
+            beta = arg((current_symbol[PILOT1_INDEX] * p) + 
+                       (current_symbol[PILOT2_INDEX] * (-p) ));
         }
+        */
 
-        double er = arg((conj(d_prev_pilots[1]) * current_symbol[PILOT1_INDEX] * p) +
-                        (conj(d_prev_pilots[2]) * current_symbol[PILOT2_INDEX] * p)); //unsure whether to multiply by p or -p?
+        /*
+        Below you compute epsilon_r using Formula (10)
+        */
+        double er = arg((conj(d_prev_pilots_with_corrected_polarity[0]) * pilot_mapping[0] * current_symbol[PILOT1_INDEX]) +
+                        (conj(d_prev_pilots_with_corrected_polarity[1]) * pilot_mapping[1] * current_symbol[PILOT2_INDEX]));
 
         er *= d_bw / (2 * M_PI * d_freq * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI));
 
+        //old
+        /*
         if (d_current_symbol < 8) { //used to be 2. assuming 8 b/c is 4+4 (4 symbols for STF, 4 symbols for LTF1)
-            d_prev_pilots[0] = current_symbol[PILOT1_INDEX];
-            d_prev_pilots[1] = -current_symbol[PILOT2_INDEX];
+            d_prev_pilots_with_corrected_polarity[0] = - current_symbol[PILOT1_INDEX];
+            d_prev_pilots_with_corrected_polarity[1] = - current_symbol[PILOT2_INDEX];
         } else {
-            d_prev_pilots[0] = current_symbol[PILOT1_INDEX] * p; //unsure whether to multiply by p or -p?
-            d_prev_pilots[1] = current_symbol[PILOT2_INDEX] * p;
+            d_prev_pilots_with_corrected_polarity[0] = current_symbol[PILOT1_INDEX] * p;
+            d_prev_pilots_with_corrected_polarity[1] = current_symbol[PILOT2_INDEX] * (-p);
         }
+        */
 
-        // compensate residual frequency offset
+        // compensate residual frequency offset iaw Equation (9)
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
-            current_symbol[i] *= exp(gr_complex(0, -beta));
+            current_symbol[i] *= exp(gr_complex(0, - beta));
         }
 
-        // update estimate of residual frequency offset
-        if (d_current_symbol >= 8) {
+        //debug
+        //dout << "Before RFO compensation \n";
+        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
 
+        // update estimate of residual frequency offset using exponential moving average
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1) {
             double alpha = 0.1;
             d_er = (1 - alpha) * d_er + alpha * er;
         }
@@ -251,13 +292,16 @@ int frame_equalizer_impl::general_work(int noutput_items,
         d_equalizer->equalize(
             current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, d_frame_mod);
 
-        dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
-
+        //old
+        /*
         // signal field, it takes 6 OFDM symbols to make the SIG field
         if (d_current_symbol >= 8 && d_current_symbol < 14) {
             o++;
         }
-        if (d_current_symbol == 14){ //wait until you've processed all 6 symbols of the SIG field
+        */
+
+        //if in SIG field
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             dout << "o: " << o << std::endl;
             //add a check to make sure that o is greater than 6?
             if (decode_signal_field(out + (o - 6) * CODED_BITS_PER_OFDM_SYMBOL)) { //point to the beginning of the SIG field. Skip all 8 symbols of the LTF and STF.
