@@ -159,6 +159,46 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         std::memcpy(current_symbol, in + i * SAMPLES_PER_OFDM_SYMBOL, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
 
+        //debug traveling pilots
+        /*
+        const int TRAVELING_PILOTS_POSITIONS = 13;
+        int p_travel_0[TRAVELING_PILOTS_POSITIONS] = {-2,-10,-5,-13,-8,-3,-11,-6,-1,-9,-4,-12,-7};
+        int p_travel_1[TRAVELING_PILOTS_POSITIONS] = {12,  4, 9,  1, 6,11,  3, 8,13, 5,10,  2, 7};
+
+        for (int i = 0; i < TRAVELING_PILOTS_POSITIONS; i++){
+            p_travel_0[i] += 16;
+            p_travel_1[i] += 16;
+        }
+        */
+
+        //we define pilot_mapping, which holds the values of the pilots iaw pilot mapping p.3253
+        gr_complex pilot_mapping[NUM_PILOTS];
+
+        if(d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1){//pilot mapping is always {-1, -1} for all LTS inside LTF1
+            pilot_mapping[0] = -1;
+            pilot_mapping[1] = -1;
+        }
+
+        //TODO : add polarity computation for LTF2 (see Equation 23-41 p.3245)
+        //do we have LTF2 if only one spatial stream is used ?
+        
+        else{
+            //As from the end of LTF1 until end of SIG field and from the end of LTF2 until the end of the OFDM frame, pilot mapping is {1, -1} for all even symbols and {-1, 1} for all odd symbols.
+            gr_complex first_pilot = d_current_symbol % 2 ? -1 : 1;
+
+            //we mulitply the pilot values with a polarity factor as described in OFMD modulation p.3258
+            gr_complex p_n = equalizer::base::POLARITY[(d_current_symbol - NUM_OFDM_SYMBOLS_IN_LTF1) % 127];
+
+            pilot_mapping[0] = first_pilot * p_n;
+            pilot_mapping[1] = - first_pilot * p_n;
+
+        }
+
+        //debug
+        //dout << "Before CSO compensation \n";
+        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
+
+
         // compensate sampling offset
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0,
@@ -202,6 +242,10 @@ int frame_equalizer_impl::general_work(int noutput_items,
             double alpha = 0.1;
             d_er = (1 - alpha) * d_er + alpha * er;
         }
+
+        //update the previous pilots
+        d_prev_pilots_with_corrected_polarity[0] = pilot_mapping[0] * current_symbol[PILOT1_INDEX];
+        d_prev_pilots_with_corrected_polarity[1] = pilot_mapping[1] * current_symbol[PILOT2_INDEX];
 
         // do equalization. this is what sends bytes downstream to WiFi Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
         d_equalizer->equalize(
