@@ -41,10 +41,12 @@ public:
 
     std::vector<gr_complex> get_csi();
 
+    gr_complex get_csi_at(int subcarrier_index);
+
 protected:
     static const gr_complex LONG[SAMPLES_PER_OFDM_SYMBOL];
 
-    gr_complex d_H[SAMPLES_PER_OFDM_SYMBOL];
+    gr_complex d_H[SAMPLES_PER_OFDM_SYMBOL] = {gr_complex(0, 0)};
 };
 
 } // namespace equalizer

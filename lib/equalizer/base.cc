@@ -46,3 +46,13 @@ std::vector<gr_complex> base::get_csi()
     }
     return csi;
 }
+
+gr_complex base::get_csi_at(int subcarrier_index)
+{
+    if ((subcarrier_index == 16) || (subcarrier_index < 3) || (subcarrier_index > 29)) {
+        return gr_complex(0,0);
+    }
+    else{
+        return d_H[subcarrier_index];
+    }
+}
