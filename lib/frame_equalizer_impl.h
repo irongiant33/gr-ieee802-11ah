@@ -26,6 +26,11 @@
 namespace gr {
 namespace ieee802_11 {
 
+enum frame_coding{
+    BCC,
+    LDPC
+};
+
 class frame_equalizer_impl : virtual public frame_equalizer
 {
 
@@ -45,8 +50,11 @@ public:
 
 private:
     bool parse_signal(uint8_t* signal);
-    bool decode_signal_field(uint8_t* rx_bits);
-    void deinterleave(uint8_t* rx_bits);
+    bool decode_signal_field(gr_complex* rx_bits);
+    void deinterleave(gr_complex* rx_symbols);
+    void unrepeat(gr_complex* rx_symbols);
+    uint8_t compute_crc(uint8_t* crc_input);
+    uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len);
 
     equalizer::base* d_equalizer;
     gr::thread::mutex d_mutex;
@@ -54,6 +62,14 @@ private:
     bool d_debug;
     bool d_log;
     int d_current_symbol;
+    int d_sig;//the current sig field number
+    uint8_t d_sig_field_bits[200] = {0};//the bits contained in the sig field before decoding
+    uint8_t d_crc4_input_bytes[4];//the input bytes to the crc computer
+    /*
+    80 should be enough. However, the viterbi algorithm needs to be able to read further than 80 (because of the traceback). For the sig field it has to access up until index 152). If value at index > 80 is !=0
+    then the whole decoding breaks and leads to different decoded values at each run.
+    */
+    gr_complex d_unrepeated[12] = {0};//unrepeatd bits
     viterbi_decoder d_decoder;
 
     // freq offset
@@ -62,13 +78,15 @@ private:
     double d_bw;                        // Hz
     double d_er;
     double d_epsilon0;
-    gr_complex d_prev_pilots[NUM_PILOTS];
+    gr_complex d_prev_pilots_with_corrected_polarity[NUM_PILOTS] = {gr_complex(0,0)}; //initiate to 0
+
+    const gr_complex LONG[SAMPLES_PER_OFDM_SYMBOL] = { 0,  0,  0,  1, -1,  1, -1, -1,  1, -1, 1, 1, -1, 1, 1, 1, 0, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0};
 
     int d_frame_bytes;
     int d_frame_symbols;
     int d_frame_encoding;
 
-    uint8_t d_deinterleaved[6*CODED_BITS_PER_OFDM_SYMBOL]; //because there are 6 OFDM frames in the SIG field
+    gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
     gr_complex symbols[CODED_BITS_PER_OFDM_SYMBOL];
 
     std::shared_ptr<gr::digital::constellation> d_frame_mod;
