@@ -214,13 +214,13 @@ public:
                     second = get<0>(vec[k]);
                 }
                 int diff = abs(get<1>(vec[i]) - get<1>(vec[k]));
-                if (diff == 64) {
+                if (diff == SAMPLES_PER_OFDM_SYMBOL) {
                     d_frame_start = min(get<1>(vec[i]), get<1>(vec[k]));
                     d_freq_offset = arg(first * conj(second)) / SAMPLES_PER_OFDM_SYMBOL;
                     // nice match found, return immediately
                     return;
 
-                } else if (diff == (SAMPLES_PER_OFDM_SYMBOL + 1)) {
+                } else if (diff == (SAMPLES_PER_OFDM_SYMBOL - 1)) {
                     d_frame_start = min(get<1>(vec[i]), get<1>(vec[k]));
                     d_freq_offset = arg(first * conj(second)) / (SAMPLES_PER_OFDM_SYMBOL - 1);
                 } else if (diff == (SAMPLES_PER_OFDM_SYMBOL + 1)) {
