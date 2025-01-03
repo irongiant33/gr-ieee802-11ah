@@ -30,6 +30,10 @@ using gr::ieee802_11::Encoding;
 #define NUM_PILOTS 2 //2 HaLow pilots. p.3253 of spec
 #define PILOT1_INDEX 9 //technically -7 in the spec, but that is a range of [-16, 15). We're operating in range of [0, 31). p.3253 of spec
 #define PILOT2_INDEX 23 //technically +7 in the spec, but see above ^. p.3253 of spec.
+#define NUM_OFDM_SYMBOLS_IN_LTF1 4 //this is described in Figure 23-3
+#define NUM_OFDM_SYMBOLS_IN_SIG_FIELD 6 //this is described in Figure 23-3
+#define NUM_BITS_UNREPEATED_SIG_SYMBOL 12 // p. 3251
+#define NUM_BITS_DECODED_SIG_SYMBOL 6 // p. 3251
 #define NUM_BITS_IN_HALOW_SIG_FIELD 36 //p.3246 of spec
 #define NUM_SIG_FIELD_REPETITIONS 2 //p.3246 of spec
 #define NUM_BITS_PER_REPETITION 6 //p.3246 of spec
@@ -91,7 +95,8 @@ public:
 class frame_param
 {
 public:
-    frame_param(ofdm_param& ofdm, int psdu_length);
+    frame_param(ofdm_param& ofdm, int psdu_length);//for DATA field
+    frame_param(ofdm_param& ofdm);//for SIG field
     // PSDU size in bytes
     int psdu_size;
     // number of OFDM symbols (17-11)

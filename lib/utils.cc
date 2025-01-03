@@ -28,6 +28,7 @@ using gr::ieee802_11::QAM16_1_2;
 using gr::ieee802_11::QAM16_3_4;
 using gr::ieee802_11::QAM64_2_3;
 using gr::ieee802_11::QAM64_3_4;
+using gr::ieee802_11::BPSK_1_2_REP;
 
 ofdm_param::ofdm_param(Encoding e)
 {
@@ -89,6 +90,14 @@ ofdm_param::ofdm_param(Encoding e)
         n_dbps = 216;
         rate_field = 0x03; // 0b00000011
         break;
+    
+    case BPSK_1_2_REP:
+        n_bpsc = 1;
+        n_cbps = 12;
+        n_dbps = 6;
+        rate_field = 0x0a; // i.e. MCS 0b00001010
+        break;
+
     defaut:
         assert(false);
         break;
@@ -106,7 +115,7 @@ void ofdm_param::print()
     std::cout << "n_dbps :" << n_dbps << std::endl;
 }
 
-
+//constructor to be used for data frames
 frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
 {
 
@@ -116,8 +125,7 @@ frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
     // number of symbols p.3248 "Data Field" for HaLow OR EQN23-65 on p.3302 OR EQN 23-66 on p.3303
     n_sym = (int)ceil((16 + 8 * psdu_size + 6) / (double)ofdm.n_dbps);
 
-    n_data_bits = 72; //hardcoding this for now to see what happens
-    //n_data_bits = n_sym * ofdm.n_dbps;
+    n_data_bits = n_sym * ofdm.n_dbps;
 
     // number of padding bits (EQN17-13, page 2817 of spec for 802.11a/g)
     // number of symbols p.3248 "Data Field" for HaLow
@@ -125,6 +133,18 @@ frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
 
     n_encoded_bits = n_sym * ofdm.n_cbps;
 }
+
+//constructor to be used for SIG field
+frame_param::frame_param(ofdm_param& ofdm){
+    //sig field is always NUM_OFDM_SYMBOLS_IN_SIG_FIELD symbols long
+    n_sym = NUM_OFDM_SYMBOLS_IN_SIG_FIELD;
+    //viterbi decoder processes bytes per bytes. n_encoded_bits needs to be the nearest mulitple of 8 capable of holding the number of encoded bits in the sig field
+    n_encoded_bits = (n_sym * ofdm.n_cbps) + (8 - (n_sym * ofdm.n_cbps) % 8);
+    //sig field is bpsk 1/2 coded
+    n_data_bits = n_encoded_bits/2;
+
+}
+
 void frame_param::print()
 {
     std::cout << "FRAME Parameters:" << std::endl;
