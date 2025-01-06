@@ -293,6 +293,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         d_prev_pilots_with_corrected_polarity[1] = pilot_mapping[1] * current_symbol[PILOT2_INDEX];
 
         // do equalization. this is what sends bytes downstream to WiFi Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
+        //TODO : resolve why csi at position 1 is always close to zero
         d_equalizer->equalize(
             current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, d_frame_mod);
 
@@ -457,6 +458,7 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
         //decode
         uint8_t* decoded_bits = d_decoder.decode(&ofdm, &frame, d_sig_field_bits);
         
+        //debug
         /*
         dout << "Post decode: ";
         for(int i = 0; i < 40; i++)
@@ -473,6 +475,7 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
         }
         dout << std::endl;
         */
+        
         
         
         //parse the sig field
@@ -528,7 +531,8 @@ void frame_equalizer_impl::unrepeat(gr_complex* rx_symbols){
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 {   
 
-    
+    //debug
+    /*
     dout << "Post decode: ";
     for(int i = 0; i < 36; i++)
     {   
@@ -545,6 +549,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
         dout << " ,";
     }
     dout << std::endl;
+    */
     
     
 
@@ -559,15 +564,24 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     frame_coding coding = decoded_bits[3] == 1 ? frame_coding::LDPC : frame_coding::BCC;
     
     //mcs
-    uint8_t mcs = decoded_bits[7] * 0x8 + decoded_bits[8] * 0x4 + decoded_bits[9] * 0x2 + decoded_bits[10] * 0x1;
+    uint8_t mcs = decoded_bits[7] * 0x1 + decoded_bits[8] * 0x2 + decoded_bits[9] * 0x4 + decoded_bits[10] * 0x8;
+    d_frame_encoding = mcs;
 
     //aggregation
     bool aggregation = decoded_bits[11] == 1 ? true : false;
 
     //length
     uint16_t length = 0;
-    for (int i = 12; i < 21; i++){
-        length += decoded_bits[i] * pow(2, (20 - i));
+    for (int i = 0; i < 9; i++){
+        //length += decoded_bits[i] * pow(2, (20 - i));
+        length += decoded_bits[12 + i] * pow(2, i);
+    }
+    if(!aggregation){
+        //when Aggregation is set to OFF, length is the number of octets in the PSDU (Table 23-18)
+        d_frame_bytes = length;
+    }
+    else{
+        //TODO
     }
 
     //travelling pilots
@@ -582,6 +596,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     dout << "Aggregation : " << aggregation << std::endl;
     dout << "length : " << unsigned(length) << std::endl;
     dout << "CRC-4 bit received : " << unsigned(rx_crc4) << std::endl;
+    dout << "CRC-4 bit computed : " << unsigned(compute_crc(decoded_bits)) << std::endl;
 
     //CRC-4
 
@@ -604,11 +619,16 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     dout << std::endl;
     */
 
+    if(rx_crc4 == compute_crc(decoded_bits)){
+        dout << "SIG field read with success" << std::endl;
+    }
+    else{
+        dout << "ERROR while reading SIG field : bad crc" << std::endl;
 
-    
-    dout << "CRC-4 bit computed : " << unsigned(compute_crc(decoded_bits)) << std::endl;
+        return false;
+    }
 
-    return false;
+
     /*
     int mcs = 0;
     int frame_bit_index = 0;
@@ -674,60 +694,60 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
         dout << "SIGNAL: wrong parity" << std::endl;
         return false;
     }*/
-    /*
-    switch (mcs) { //table 23-41
+    
+    switch (mcs) {//table 23-41
     case 0:
         d_frame_encoding = 0;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)24); //idk what this is doing
-        d_frame_mod = d_bpsk;
+        //d_frame_symbols = (int)ceil((8 * d_frame_bytes + 8 + 6) / (double) 12);//see Equation 23-79
+        //d_frame_mod = d_bpsk;
         dout << "Encoding: 300 kbit/s   ";
         break;
     case 1:
         d_frame_encoding = 1;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)36); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)36);//TODO
         d_frame_mod = d_qpsk;
         dout << "Encoding: 600 kbit/s   ";
         break;
     case 2:
         d_frame_encoding = 2;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)48); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)48);//TODO
         d_frame_mod = d_qpsk;
         dout << "Encoding: 900 kbit/s   ";
         break;
     case 3:
         d_frame_encoding = 3;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)72); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)72);//TODO
         d_frame_mod = d_16qam;
         dout << "Encoding: 1200 kbit/s   ";
         break;
     case 4:
         d_frame_encoding = 4;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)96); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)96);//TODO
         d_frame_mod = d_16qam;
         dout << "Encoding: 1800 kbit/s   ";
         break;
     case 5:
         d_frame_encoding = 5;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)144); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)144);//TODO
         d_frame_mod = d_64qam;
         dout << "Encoding: 2400 kbit/s   ";
         break;
     case 6:
         d_frame_encoding = 6;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)192); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)192);//TODO
         d_frame_mod = d_64qam;
         dout << "Encoding: 2700 kbit/s   ";
         break;
     case 7:
         d_frame_encoding = 7;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)216); //idk what this is doing
+        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)216);//TODO
         d_frame_mod = d_64qam;
         dout << "Encoding: 3000 kbit/s   ";
         break;
     case 10:
         d_frame_encoding = 10;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)240); //idk what this is doing, just added 24 to case 7
-        d_frame_mod = d_bpsk;
+        //d_frame_symbols = (int)ceil((8 * d_frame_bytes + 8 + 6) / (double) 6);//see Equation 23-79
+        //d_frame_mod = d_bpsk;
         dout << "Encoding: 150 kbit/s   ";
         break;
     default:
@@ -739,9 +759,10 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
           d_frame_encoding,
           d_frame_bytes,
           d_frame_symbols);
+          
     return true;
 
-    */
+    
 }
 
 uint8_t frame_equalizer_impl::compute_crc(uint8_t* decoded_bits){
@@ -762,18 +783,20 @@ uint8_t frame_equalizer_impl::compute_crc(uint8_t* decoded_bits){
     //right shift by 6 (32 - 26) bits
     crc4_input_bits = crc4_input_bits >> 6;
 
+    //debug
     /*
     std::cout << "Right shift: ";
     std::cout << std::bitset<32>(crc4_input_bits);
     std::cout << std::endl;
     */
+    
 
     //split into 4 bytes (to hold the 32 bits)
     uint8_t crc4_input_bytes[num_crc_input_bytes];
-    crc4_input_bytes[0] = (crc4_input_bits & 0xff000000);
-    crc4_input_bytes[1] = (crc4_input_bits & 0x00ff0000) >> 8;
-    crc4_input_bytes[2] = (crc4_input_bits & 0x0000ff00) >> 16;
-    crc4_input_bytes[3] = (crc4_input_bits & 0x000000ff) >> 24;
+    crc4_input_bytes[0] = (crc4_input_bits & 0xff000000) >> 24;
+    crc4_input_bytes[1] = (crc4_input_bits & 0x00ff0000) >> 16;
+    crc4_input_bytes[2] = (crc4_input_bits & 0x0000ff00) >> 8;
+    crc4_input_bytes[3] = (crc4_input_bits & 0x000000ff);
 
     //debug
     /*
@@ -783,6 +806,7 @@ uint8_t frame_equalizer_impl::compute_crc(uint8_t* decoded_bits){
     }
     dout << std::endl;
     */
+    
 
     uint8_t computed_crc = 0;
     return crc4HaLoW_byte(computed_crc, crc4_input_bytes, num_crc_input_bytes);

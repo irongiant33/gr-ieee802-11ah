@@ -73,6 +73,20 @@ void ls::equalize(gr_complex* in,
             d_H[i] *= gr_complex((float) n / (n + 1), 0);//rescale current mean iaw previous and current mean sizes
             d_H[i] += (in[i] / LONG[i]) / gr_complex(n + 1, 0);//add latest channel estimate, scaled to current mean size
         }
+        
+        //debug
+        /*
+        std::cout << "From Equalizer LS : In at 0 is " << abs(in[0]) << std::endl;
+        std::cout << "From Equalizer LS : In at 1 is " << abs(in[1]) << std::endl;
+        std::cout << "From Equalizer LS : In at 2 is " << abs(in[2]) << std::endl;
+        std::cout << "From Equalizer LS : In at 3 is " << abs(in[3]) << std::endl;
+        std::cout << "From Equalizer LS : In at 15 is " << abs(in[15]) << std::endl;
+        std::cout << "From Equalizer LS : In at 16 is " << abs(in[16]) << std::endl;
+        std::cout << "From Equalizer LS : In at 17 is " << abs(in[17]) << std::endl;
+        std::cout << "From Equalizer LS : In at 29 is " << abs(in[29]) << std::endl;
+        std::cout << "From Equalizer LS : In at 30 is " << abs(in[30]) << std::endl;
+        std::cout << "From Equalizer LS : In at 31 is " << abs(in[31]) << std::endl;
+        */
     }
     else {
         int c = 0;

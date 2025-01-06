@@ -42,8 +42,8 @@ using gr::ieee802_11::Encoding;
 #define SAMPLES_PER_GI 8 //for ieee802.11a/g, the GI is 0.8us. For 802.11ah, GI is 8us
 
 #define MAX_PAYLOAD_SIZE 1500
-#define MAX_PSDU_SIZE (MAX_PAYLOAD_SIZE + 28) // MAC, CRC. What is 28??
-#define MAX_SYM (((16 + 8 * MAX_PSDU_SIZE + 6) / 24) + 1) //16 is samples per GI? What is 24? 
+#define MAX_PSDU_SIZE 511 //MAX_PSDU_SIZE is the maximum number of octets per Halow frames (length field in SIG is coded on 9 bits, see Table 23-18)
+#define MAX_SYM ((8 * MAX_PSDU_SIZE + 8 + 6) / 6)
 #define MAX_BITS_PER_SYM 288 //is this true for HaLow?
 #define MAX_ENCODED_BITS ((16 + 8 * MAX_PSDU_SIZE + 6) * 2 + MAX_BITS_PER_SYM) //is 16 samples per GI? 
 
