@@ -50,7 +50,7 @@ public:
                      gr_vector_void_star& output_items)
     {
 
-        const uint8_t* in = (const uint8_t*)input_items[0];
+        const gr_complex* in = (const gr_complex*)input_items[0];
 
         int i = 0;
 
@@ -243,7 +243,7 @@ private:
 
     viterbi_decoder d_decoder;
 
-    uint8_t d_rx_symbols[CODED_BITS_PER_OFDM_SYMBOL * MAX_SYM];
+    gr_complex d_rx_symbols[CODED_BITS_PER_OFDM_SYMBOL * MAX_SYM];
     uint8_t d_rx_bits[MAX_ENCODED_BITS];
     uint8_t d_deinterleaved_bits[MAX_ENCODED_BITS];
     uint8_t out_bytes[MAX_PSDU_SIZE + 2]; // 2 for signal field

@@ -24,7 +24,7 @@ using namespace gr::ieee802_11::equalizer;
 void ls::equalize(gr_complex* in,
                   int n,
                   gr_complex* symbols,
-                  uint8_t* bits,
+                  gr_complex* bits,
                   std::shared_ptr<gr::digital::constellation> mod)
 {
     /*
@@ -96,7 +96,7 @@ void ls::equalize(gr_complex* in,
                 continue; //ignore all pilots and dead subcarriers
             } else {
                 symbols[c] = in[i] / d_H[i];
-                bits[c] = mod->decision_maker(&symbols[c]);
+                bits[c] = in[i] / d_H[i];//mod->decision_maker(&symbols[c]);
                 c++;
             }
         }

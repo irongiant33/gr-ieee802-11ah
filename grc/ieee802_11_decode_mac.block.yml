@@ -20,7 +20,7 @@ parameters:
 
 inputs:
 -   domain: stream
-    dtype: byte
+    dtype: complex
     vlen: 24
 
 outputs:

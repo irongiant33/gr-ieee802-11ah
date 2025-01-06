@@ -33,8 +33,9 @@ public:
     virtual void equalize(gr_complex* in,
                           int n,
                           gr_complex* symbols,
-                          uint8_t* bits,
+                          gr_complex* bits,
                           std::shared_ptr<gr::digital::constellation> mod) = 0;
+
     virtual double get_snr() = 0;
 
     static const gr_complex POLARITY[127];

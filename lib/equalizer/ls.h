@@ -31,8 +31,9 @@ public:
     virtual void equalize(gr_complex* in,
                           int n,
                           gr_complex* symbols,
-                          uint8_t* bits,
+                          gr_complex* sym,
                           std::shared_ptr<gr::digital::constellation> mod);
+
     virtual double get_snr();
 
 private:

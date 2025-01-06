@@ -122,7 +122,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
     gr::thread::scoped_lock lock(d_mutex);
 
     const gr_complex* in = (const gr_complex*)input_items[0];
-    uint8_t* out = (uint8_t*)output_items[0];
+    gr_complex* out = (gr_complex*)output_items[0];
 
     int i = 0;
     int o = 0;
