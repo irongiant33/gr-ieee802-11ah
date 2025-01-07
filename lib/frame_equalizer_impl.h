@@ -51,8 +51,8 @@ public:
 private:
     bool parse_signal(uint8_t* signal);
     bool decode_signal_field(gr_complex* rx_bits);
-    void deinterleave(gr_complex* rx_symbols);
-    void unrepeat(gr_complex* rx_symbols);
+    //void deinterleave(gr_complex* rx_symbols);
+    //void unrepeat(gr_complex* rx_symbols);
     uint8_t compute_crc(uint8_t* crc_input);
     uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len);
 
@@ -69,7 +69,6 @@ private:
     80 should be enough. However, the viterbi algorithm needs to be able to read further than 80 (because of the traceback). For the sig field it has to access up until index 152). If value at index > 80 is !=0
     then the whole decoding breaks and leads to different decoded values at each run.
     */
-    gr_complex d_unrepeated[12] = {0};//unrepeatd bits
     viterbi_decoder d_decoder;
 
     // freq offset
@@ -87,6 +86,7 @@ private:
     int d_frame_encoding;
 
     gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+    gr_complex d_unrepeated[NUM_BITS_UNREPEATED_SIG_SYMBOL];
     gr_complex symbols[CODED_BITS_PER_OFDM_SYMBOL];
 
     std::shared_ptr<gr::digital::constellation> d_frame_mod;
@@ -95,7 +95,6 @@ private:
     constellation_16qam::sptr d_16qam;
     constellation_64qam::sptr d_64qam;
 
-    static const int interleaver_pattern[CODED_BITS_PER_OFDM_SYMBOL];
 };
 
 } // namespace ieee802_11

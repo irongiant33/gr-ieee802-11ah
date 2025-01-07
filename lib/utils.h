@@ -20,6 +20,7 @@
 #include <gnuradio/config.h>
 #include <ieee802_11/api.h>
 #include <ieee802_11/mapper.h>
+#include <ieee802_11/constellations.h>
 #include <cinttypes>
 #include <iostream>
 
@@ -42,10 +43,10 @@ using gr::ieee802_11::Encoding;
 #define SAMPLES_PER_GI 8 //for ieee802.11a/g, the GI is 0.8us. For 802.11ah, GI is 8us
 
 #define MAX_PAYLOAD_SIZE 1500
-#define MAX_PSDU_SIZE 511 //MAX_PSDU_SIZE is the maximum number of octets per Halow frames (length field in SIG is coded on 9 bits, see Table 23-18)
+#define MAX_PSDU_SIZE 511 //MAX_PSDU_SIZE is the maximum number of octets (or ofdm symbols) per Halow frames (length field in SIG is coded on 9 bits, see Table 23-18)
 #define MAX_SYM ((8 * MAX_PSDU_SIZE + 8 + 6) / 6)
-#define MAX_BITS_PER_SYM 288 //is this true for HaLow?
-#define MAX_ENCODED_BITS ((16 + 8 * MAX_PSDU_SIZE + 6) * 2 + MAX_BITS_PER_SYM) //is 16 samples per GI? 
+#define MAX_BITS_PER_SYM 160 //is this true for HaLow?
+#define MAX_ENCODED_BITS MAX_BITS_PER_SYM * MAX_PSDU_SIZE //is 16 samples per GI?
 
 #define dout d_debug&& std::cout
 #define mylog(...)                      \
@@ -85,6 +86,8 @@ public:
     int n_cbps;
     // number of data bits per OFDM symbol
     int n_dbps;
+    // constellation
+    std::shared_ptr<gr::digital::constellation> constellation;
 
     void print();
 };
@@ -142,5 +145,22 @@ void interleave(const char* input,
 void split_symbols(const char* input, char* out, frame_param& frame, ofdm_param& ofdm);
 
 void generate_bits(const char* psdu, char* data_bits, frame_param& frame);
+
+
+/**
+ * Variables and functions related to frame decoding
+ * 
+ * 
+ */
+
+void deinterleave(gr_complex* deinterleaved, gr_complex* rx_symbols);
+
+void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved);
+
+const int interleaver_pattern[CODED_BITS_PER_OFDM_SYMBOL] = {
+    0, 3, 6, 9,  12, 15, 18, 21,
+    1, 4, 7, 10, 13, 16, 19, 22,
+    2, 5, 8, 11, 14, 17, 20, 23
+}; //table 23-20 and table 23-41
 
 #endif /* INCLUDED_IEEE802_11_UTILS_H */

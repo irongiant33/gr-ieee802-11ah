@@ -384,10 +384,15 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
     */
     
     //deinterleave
-    deinterleave(rx_symbols);
+    deinterleave(d_deinterleaved, rx_symbols);
 
     //unrepeat
-    unrepeat(d_deinterleaved);
+    unrepeat(d_unrepeated, d_deinterleaved);
+
+    //add the decided bit into d_sig_field_bits
+    for (int i = 0; i < NUM_BITS_UNREPEATED_SIG_SYMBOL; i++){
+        d_sig_field_bits[d_sig * NUM_BITS_UNREPEATED_SIG_SYMBOL + i] = ofdm.constellation->decision_maker(&d_unrepeated[i]);
+    }
     
     /*
     dout << "Post deinterleaved: ";
@@ -812,11 +817,6 @@ uint8_t frame_equalizer_impl::compute_crc(uint8_t* decoded_bits){
     return crc4HaLoW_byte(computed_crc, crc4_input_bytes, num_crc_input_bytes);
 }
 
-const int frame_equalizer_impl::interleaver_pattern[CODED_BITS_PER_OFDM_SYMBOL] = {
-    0, 3, 6, 9,  12, 15, 18, 21,
-    1, 4, 7, 10, 13, 16, 19, 22,
-    2, 5, 8, 11, 14, 17, 20, 23
-}; //table 23-20 and table 23-41
 
 // Table for CRC4 computation
 // This code was partially generated from the crcany program of Mark Adler (see https://github.com/madler/crcany)

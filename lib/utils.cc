@@ -40,6 +40,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 24;
         n_dbps = 12;
         rate_field = 0x00; // i.e. MCS 0b00000000
+        constellation =  gr::ieee802_11::constellation_bpsk::make();
         break;
 
     case BPSK_3_4:
@@ -96,6 +97,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 12;
         n_dbps = 6;
         rate_field = 0x0a; // i.e. MCS 0b00001010
+        constellation =  gr::ieee802_11::constellation_bpsk::make();
         break;
 
     defaut:
@@ -298,5 +300,36 @@ void generate_bits(const char* psdu, char* data_bits, frame_param& frame)
         for (int b = 0; b < 8; b++) {
             data_bits[i * 8 + b] = !!(psdu[i] & (1 << b));
         }
+    }
+}
+
+
+void deinterleave(gr_complex* deinterleaved, gr_complex* rx_symbols)
+{   
+    for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
+        deinterleaved[i] = rx_symbols[interleaver_pattern[i]];
+    }
+}
+
+void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved){
+
+    //Unrepeat using Maximum Ratio Combining
+    //in this case the symbols have already been multiplied by the channel conjugate (see equalizer)
+    //therefore all we still need to do is to peform an average of the signal repetitions
+
+    uint8_t s[NUM_BITS_UNREPEATED_SIG_SYMBOL] = {1,0,0,0,0,1,0,1,0,1,1,1};
+
+    for(int i = 0; i < NUM_BITS_UNREPEATED_SIG_SYMBOL; i++){
+
+        //combine
+        unrepeated[i] = deinterleaved[i] * gr_complex(0.5,0) + //first sample
+                          deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL] * gr_complex((s[i] == 0 ? 0.5 : -0.5),0); //second sample, inverted in case s == 1
+
+        /*
+        if((deinterleaved[i].real() < 0) != (deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL].real() * (s[i] == 0 ? 1 : -1) < 0 )){
+            dout << "ERROR in unrepeat" << std::endl;
+        }
+        */
+
     }
 }
