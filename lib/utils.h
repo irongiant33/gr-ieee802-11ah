@@ -31,6 +31,7 @@ using gr::ieee802_11::Encoding;
 #define NUM_PILOTS 2 //2 HaLow pilots. p.3253 of spec
 #define PILOT1_INDEX 9 //technically -7 in the spec, but that is a range of [-16, 15). We're operating in range of [0, 31). p.3253 of spec
 #define PILOT2_INDEX 23 //technically +7 in the spec, but see above ^. p.3253 of spec.
+#define TRAVELING_PILOT_POSITIONS 13 //number of travelling pilot positions. Table 23-21, p.3254.
 #define NUM_OFDM_SYMBOLS_IN_LTF1 4 //this is described in Figure 23-3
 #define NUM_OFDM_SYMBOLS_IN_SIG_FIELD 6 //this is described in Figure 23-3
 #define NUM_BITS_UNREPEATED_SIG_SYMBOL 12 // p. 3251

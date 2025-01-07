@@ -25,6 +25,8 @@ void ls::equalize(gr_complex* in,
                   int n,
                   gr_complex* symbols,
                   gr_complex* bits,
+                  uint8_t pilot1_index,
+                  uint8_t pilot2_index,
                   std::shared_ptr<gr::digital::constellation> mod)
 {
     /*
@@ -91,7 +93,7 @@ void ls::equalize(gr_complex* in,
     else {
         int c = 0;
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
-            if ((i == PILOT1_INDEX) || (i == 16) || (i == PILOT2_INDEX) ||
+            if ((i == pilot1_index) || (i == 16) || (i == pilot2_index) ||
                 (i < 3) || (i > 29)) {
                 continue; //ignore all pilots and dead subcarriers
             } else {

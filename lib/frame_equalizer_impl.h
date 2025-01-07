@@ -80,6 +80,11 @@ private:
     gr_complex d_prev_pilots_with_corrected_polarity[NUM_PILOTS] = {gr_complex(0,0)}; //initiate to 0
 
     const gr_complex LONG[SAMPLES_PER_OFDM_SYMBOL] = { 0,  0,  0,  1, -1,  1, -1, -1,  1, -1, 1, 1, -1, 1, 1, 1, 0, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0};
+    
+    //traveling pilots
+    const int TRAVEL_PILOT1[TRAVELING_PILOT_POSITIONS] = {14, 6, 11, 3, 8, 13, 5, 10, 15, 7, 12, 4, 9};
+    const int TRAVEL_PILOT2[TRAVELING_PILOT_POSITIONS] = {28,20, 25,17,22, 27,19, 24, 29,21, 26,18,23};
+    bool d_travel_pilots = false;
 
     int d_frame_bytes;
     int d_frame_symbols;

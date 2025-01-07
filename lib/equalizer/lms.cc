@@ -21,11 +21,13 @@
 
 using namespace gr::ieee802_11::equalizer;
 
-void lms::equalize(gr_complex* in,
-                   int n,
-                   gr_complex* symbols,
-                   gr_complex* bits,
-                   std::shared_ptr<gr::digital::constellation> mod)
+void equalize(gr_complex* in,
+                        int n,
+                        gr_complex* symbols,
+                        gr_complex* bits,
+                        uint8_t pilot1_index,
+                        uint8_t pilot2_index,
+                        std::shared_ptr<gr::digital::constellation> mod)
 {
     /*
 

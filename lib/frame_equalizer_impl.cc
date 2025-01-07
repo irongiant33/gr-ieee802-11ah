@@ -144,6 +144,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
             d_current_symbol = 0;
             d_frame_symbols = 0;
             d_sig = 0;
+            d_travel_pilots = false;
             d_frame_mod = d_bpsk;
 
             d_freq_offset_from_synclong =
@@ -184,10 +185,10 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         //TODO : add polarity computation for LTF2 (see Equation 23-41 p.3245)
-        //do we have LTF2 if only one spatial stream is used ?
+        //do we have LTF2 if only one spatial stream is used ? According to p.3199, there is one LTF per STS. For the moment we concentrate on STS = 1
         
         else{
-            //As from the end of LTF1 until end of SIG field and from the end of LTF2 until the end of the OFDM frame, pilot mapping is {1, -1} for all even symbols and {-1, 1} for all odd symbols.
+            //As from the end of LTF1 until end of DATA field, pilot mapping is {1, -1} for all even symbols and {-1, 1} for all odd symbols.
             gr_complex first_pilot = d_current_symbol % 2 ? -1 : 1;
 
             //we mulitply the pilot values with a polarity factor as described in OFMD modulation p.3258
@@ -196,6 +197,17 @@ int frame_equalizer_impl::general_work(int noutput_items,
             pilot_mapping[0] = first_pilot * p_n;
             pilot_mapping[1] = - first_pilot * p_n;
 
+        }
+
+        //compute the pilot indexes
+        uint8_t pilot1_index = PILOT1_INDEX;
+        uint8_t pilot2_index = PILOT2_INDEX;
+
+        if(d_travel_pilots){
+            uint8_t m = (d_current_symbol - NUM_OFDM_SYMBOLS_IN_LTF1 - NUM_OFDM_SYMBOLS_IN_SIG_FIELD) % TRAVELING_PILOT_POSITIONS;
+
+            pilot1_index = TRAVEL_PILOT1[m];
+            pilot2_index = TRAVEL_PILOT2[m];
         }
 
         //debug
@@ -228,14 +240,14 @@ int frame_equalizer_impl::general_work(int noutput_items,
         //gr_complex beta_prev = p[0] * current_symbol[PILOT1_INDEX] * conj(d_Qi[0]) + p[1] * current_symbol[PILOT2_INDEX] * conj(d_Qi[1]);
         double beta = 0;
         if(d_current_symbol != 0){
-            beta = arg( pilot_mapping[0] * current_symbol[PILOT1_INDEX] * conj(d_equalizer->get_csi_at(PILOT1_INDEX)) + 
-                        pilot_mapping[1] * current_symbol[PILOT2_INDEX] * conj(d_equalizer->get_csi_at(PILOT2_INDEX)) );
+            beta = arg( pilot_mapping[0] * current_symbol[pilot1_index] * conj(d_equalizer->get_csi_at(pilot1_index)) + 
+                        pilot_mapping[1] * current_symbol[pilot2_index] * conj(d_equalizer->get_csi_at(pilot2_index)) );
         }
 
         //debug
         //dout << "Channel at i = 0 " <<  d_Qi[0] << ", at i = 1 " << d_Qi[1] << std::endl;
-        //dout << "Pilot 0 is " << current_symbol[PILOT1_INDEX] / d_Qi[0] <<", pilot 1 is " << current_symbol[PILOT2_INDEX]/ d_Qi[1] << std::endl;
-        //dout << "Polarity pilot 0 is " << p[0] << " , polarity pilot 1 is " << p[1] << std::endl;
+        //dout << "Pilot 0 is " << current_symbol[pilot1_index] / d_equalizer->get_csi_at(pilot1_index) <<", pilot 1 is " << current_symbol[pilot2_index]/ d_equalizer->get_csi_at(pilot2_index) << std::endl;
+        //dout << "Polarity pilot 0 should be " << pilot_mapping[0] << " , polarity pilot 1 should be " << pilot_mapping[1] << std::endl;
         //dout << "Epsilon is " << epsilon << std::endl;
         //dout << "Beta is " << beta << std::endl;
         //dout << "Beta prev is " << beta_prev << std::endl;
@@ -257,8 +269,8 @@ int frame_equalizer_impl::general_work(int noutput_items,
         /*
         Below you compute epsilon_r using Formula (10)
         */
-        double er = arg((conj(d_prev_pilots_with_corrected_polarity[0]) * pilot_mapping[0] * current_symbol[PILOT1_INDEX]) +
-                        (conj(d_prev_pilots_with_corrected_polarity[1]) * pilot_mapping[1] * current_symbol[PILOT2_INDEX]));
+        double er = arg((conj(d_prev_pilots_with_corrected_polarity[0]) * pilot_mapping[0] * current_symbol[pilot1_index]) +
+                        (conj(d_prev_pilots_with_corrected_polarity[1]) * pilot_mapping[1] * current_symbol[pilot2_index]));
 
         er *= d_bw / (2 * M_PI * d_freq * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI));
 
@@ -289,13 +301,13 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         //update the previous pilots
-        d_prev_pilots_with_corrected_polarity[0] = pilot_mapping[0] * current_symbol[PILOT1_INDEX];
-        d_prev_pilots_with_corrected_polarity[1] = pilot_mapping[1] * current_symbol[PILOT2_INDEX];
+        d_prev_pilots_with_corrected_polarity[0] = pilot_mapping[0] * current_symbol[pilot1_index];
+        d_prev_pilots_with_corrected_polarity[1] = pilot_mapping[1] * current_symbol[pilot2_index];
 
         // do equalization. this is what sends bytes downstream to WiFi Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
         //TODO : resolve why csi at position 1 is always close to zero
         d_equalizer->equalize(
-            current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, d_frame_mod);
+            current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, pilot1_index, pilot2_index, d_frame_mod);
 
         //old
         /*
@@ -343,7 +355,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         //if LTF2 or DATA
         //TODO : change for LTF2
-        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1){// + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
         //if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
@@ -521,7 +533,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     
 
     //number of spatial streams
-    uint8_t nsts = decoded_bits[0] * 0x2 + decoded_bits[1] * 0x1;
+    uint8_t nsts = decoded_bits[0] * 0x1 + decoded_bits[1] * 0x2 + 1;
 
     //short GI
     //TODO : foresee in sync long short guard intervals
@@ -552,16 +564,18 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     }
 
     //travelling pilots
-    bool traveling_pilots = decoded_bits[24] == 1 ? true : false;
+    d_travel_pilots = decoded_bits[24] == 1 ? true : false;
 
     //crc received
     uint8_t rx_crc4 = decoded_bits[26] * 0x8 + decoded_bits[27] * 0x4 + decoded_bits[28] * 0x2 + decoded_bits[29] * 0x1;
 
     //debug
+    dout << "sts : " << unsigned(nsts) << std::endl;
     dout << "mcs : " << unsigned(mcs) << std::endl;
     dout << "Short GI : " << short_gi << std::endl;
     dout << "Aggregation : " << aggregation << std::endl;
     dout << "length : " << unsigned(length) << std::endl;
+    dout << "Travelling Pilots " << d_travel_pilots << std::endl;
     dout << "CRC-4 bit received : " << unsigned(rx_crc4) << std::endl;
     dout << "CRC-4 bit computed : " << unsigned(compute_crc(decoded_bits)) << std::endl;
 

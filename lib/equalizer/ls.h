@@ -32,6 +32,8 @@ public:
                           int n,
                           gr_complex* symbols,
                           gr_complex* sym,
+                          uint8_t pilot1_index,
+                          uint8_t pilot2_index,
                           std::shared_ptr<gr::digital::constellation> mod);
 
     virtual double get_snr();
