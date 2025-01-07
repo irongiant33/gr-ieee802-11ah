@@ -63,6 +63,7 @@ void bind_mapper(py::module& m)
         .value("QAM16_3_4", ::gr::ieee802_11::QAM16_3_4) // 5
         .value("QAM64_2_3", ::gr::ieee802_11::QAM64_2_3) // 6
         .value("QAM64_3_4", ::gr::ieee802_11::QAM64_3_4) // 7
+        .value("BPSK_1_2_REP", ::gr::ieee802_11::BPSK_1_2_REP)
         .export_values()
     ;
 
