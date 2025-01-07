@@ -125,17 +125,84 @@ public:
     }
 
     void decode()
-    {
-
+    {   
+        //TODO
+        /*
         for (int i = 0; i < d_frame.n_sym * CODED_BITS_PER_OFDM_SYMBOL; i++) {
             for (int k = 0; k < d_ofdm.n_bpsc; k++) {
                 d_rx_bits[i * d_ofdm.n_bpsc + k] = !!(d_rx_symbols[i] & (1 << k));
             }
         }
+        */
+        
 
-        deinterleave();
-        uint8_t* decoded = d_decoder.decode(&d_ofdm, &d_frame, d_deinterleaved_bits);
+        //loop over all symbols
+        for (int i = 0; i < d_frame.n_sym; i++){
+
+            deinterleave(d_deinterleaved, d_rx_symbols + (i * CODED_BITS_PER_OFDM_SYMBOL));
+
+            //if MCS = 10
+            if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                //unrepeat the symbols
+                unrepeat(d_unrepeated, d_deinterleaved);
+
+                //add the decided bit into d_encoded_bits
+                for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL/2; j++){
+                    d_encoded_bits[i * CODED_BITS_PER_OFDM_SYMBOL/2 + j] = d_ofdm.constellation->decision_maker(&d_unrepeated[j]);
+                }
+            }
+
+            //for all other MCS's
+            else{
+
+                //add the decided bit into d_encoded_bits
+                for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL; j++){
+                    d_encoded_bits[i * CODED_BITS_PER_OFDM_SYMBOL + j] = d_ofdm.constellation->decision_maker(&d_deinterleaved[j]);
+                }
+            }
+        }
+
+        /*
+        dout << "Pre decode: ";
+        for(int i = 0; i < 40; i++)
+        {
+            if (d_encoded_bits[i] == 1){
+                dout << "1";
+            }
+            else if(d_encoded_bits[i] == 0){
+                dout << "0";
+            }
+            else{
+                dout << "E";
+            }
+        }
+        dout << std::endl;
+        */
+        
+        
+        uint8_t* decoded = d_decoder.decode(&d_ofdm, &d_frame, d_encoded_bits);
+
+        /*
+        dout << "Pre decode: ";
+        for(int i = 0; i < 40; i++)
+        {
+            if (decoded[i] == 1){
+                dout << "1";
+            }
+            else if(decoded[i] == 0){
+                dout << "0";
+            }
+            else{
+                dout << "E";
+            }
+        }
+        dout << std::endl;
+        */
+        
+
         descramble(decoded);
+
+
         print_output();
 
         // skip service field
@@ -157,33 +224,8 @@ public:
             pmt::dict_add(d_meta, pmt::mp("dlt"), pmt::from_long(LINKTYPE_IEEE802_11));
 
         message_port_pub(pmt::mp("out"), pmt::cons(d_meta, blob));
+
     }
-
-    void deinterleave()
-    {
-
-        int n_cbps = d_ofdm.n_cbps;
-        int first[MAX_BITS_PER_SYM];
-        int second[MAX_BITS_PER_SYM];
-        int s = std::max(d_ofdm.n_bpsc / 2, 1);
-
-        for (int j = 0; j < n_cbps; j++) {
-            first[j] = s * (j / s) + ((j + int(floor(16.0 * j / n_cbps))) % s);
-        }
-
-        for (int i = 0; i < n_cbps; i++) {
-            second[i] = 16 * i - (n_cbps - 1) * int(floor(16.0 * i / n_cbps));
-        }
-
-        int count = 0;
-        for (int i = 0; i < d_frame.n_sym; i++) {
-            for (int k = 0; k < n_cbps; k++) {
-                d_deinterleaved_bits[i * n_cbps + second[first[k]]] =
-                    d_rx_bits[i * n_cbps + k];
-            }
-        }
-    }
-
 
     void descramble(uint8_t* decoded_bits)
     {
@@ -201,7 +243,7 @@ public:
         int feedback;
         int bit;
 
-        for (int i = 7; i < d_frame.psdu_size * 8 + 16; i++) {
+        for (int i = 7; i < d_frame.psdu_size * 8 + 8; i++) {
             feedback = ((!!(state & 64))) ^ (!!(state & 8));
             bit = feedback ^ (decoded_bits[i] & 0x1);
             out_bytes[i / 8] |= bit << (i % 8);
@@ -214,7 +256,7 @@ public:
 
         dout << std::endl;
         dout << "psdu size" << d_frame.psdu_size << std::endl;
-        for (int i = 2; i < d_frame.psdu_size + 2; i++) {
+        for (int i = 1; i < d_frame.psdu_size + 2; i++) {
             dout << std::setfill('0') << std::setw(2) << std::hex
                  << ((unsigned int)out_bytes[i] & 0xFF) << std::dec << " ";
             if (i % 16 == 15) {
@@ -222,7 +264,7 @@ public:
             }
         }
         dout << std::endl;
-        for (int i = 2; i < d_frame.psdu_size + 2; i++) {
+        for (int i = 1; i < d_frame.psdu_size + 2; i++) {
             if ((out_bytes[i] > 31) && (out_bytes[i] < 127)) {
                 dout << ((char)out_bytes[i]);
             } else {
@@ -245,8 +287,12 @@ private:
 
     gr_complex d_rx_symbols[CODED_BITS_PER_OFDM_SYMBOL * MAX_SYM];
     uint8_t d_rx_bits[MAX_ENCODED_BITS];
-    uint8_t d_deinterleaved_bits[MAX_ENCODED_BITS];
-    uint8_t out_bytes[MAX_PSDU_SIZE + 2]; // 2 for signal field
+
+    uint8_t out_bytes[MAX_PSDU_SIZE + 6]; // 2 for signal field
+
+    gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+    gr_complex d_unrepeated[NUM_BITS_UNREPEATED_SIG_SYMBOL];
+    uint8_t d_encoded_bits[MAX_ENCODED_BITS] = {0};
 
     int copied;
     bool d_frame_complete;

@@ -343,8 +343,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         //if LTF2 or DATA
         //TODO : change for LTF2
-        //debug
-        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1) {
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
         //if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
@@ -492,46 +491,9 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
     }
 }
 
-void frame_equalizer_impl::deinterleave(gr_complex* rx_symbols)
-{   
-    //old
-    /*
-    //why does iteration 1 invoke undefined behavior?
-    for(int j = 0; j < 6; j++){ //because there are 6 OFDM symbols in rx_bits (or at least there should be)
-        for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
-            d_deinterleaved[j*CODED_BITS_PER_OFDM_SYMBOL + i] = rx_bits[j*CODED_BITS_PER_OFDM_SYMBOL + interleaver_pattern[i]];
-        }
-    }
-    */
 
-    for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
-        d_deinterleaved[i] = rx_symbols[interleaver_pattern[i]];
-    }
-}
 
-void frame_equalizer_impl::unrepeat(gr_complex* rx_symbols){
 
-    //Unrepeat using Maximum Ratio Combining
-    //in this case the symbols have already been multiplied by the channel conjugate (see equalizer)
-    //therefore all we still need to do is to peform an average of the signal repetitions
-
-    uint8_t s[NUM_BITS_UNREPEATED_SIG_SYMBOL] = {1,0,0,0,0,1,0,1,0,1,1,1};
-
-    for(int i = 0; i < NUM_BITS_UNREPEATED_SIG_SYMBOL; i++){
-
-        //combine
-        d_unrepeated[i] = d_deinterleaved[i] * gr_complex(0.5,0) + //first sample
-                          d_deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL] * gr_complex((s[i] == 0 ? 0.5 : -0.5),0); //second sample, inverted in case s == 1
-
-        //finally, add the decided bit into d_sig_field_bits
-        d_sig_field_bits[d_sig * NUM_BITS_UNREPEATED_SIG_SYMBOL + i] = d_frame_mod->decision_maker(&d_unrepeated[i]);
-
-        if((d_deinterleaved[i].real() < 0) != (d_deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL].real() * (s[i] == 0 ? 1 : -1) < 0 )){
-            dout << "ERROR in unrepeat" << std::endl;
-        }
-
-    }
-}
 
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 {   
