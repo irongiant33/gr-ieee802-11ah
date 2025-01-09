@@ -33,7 +33,7 @@ class decode_mac_impl : public decode_mac
 public:
     decode_mac_impl(bool log, bool debug)
         : block("decode_mac",
-                gr::io_signature::make(1, 1, CODED_BITS_PER_OFDM_SYMBOL),
+                gr::io_signature::make(1, 1, CODED_BITS_PER_OFDM_SYMBOL * sizeof(gr_complex)),
                 gr::io_signature::make(0, 0, 0)),
           d_log(log),
           d_debug(debug),

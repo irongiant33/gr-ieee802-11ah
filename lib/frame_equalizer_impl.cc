@@ -39,7 +39,7 @@ frame_equalizer_impl::frame_equalizer_impl(
     Equalizer algo, double freq, double bw, bool log, bool debug)
     : gr::block("frame_equalizer",
                 gr::io_signature::make(1, 1, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex)),
-                gr::io_signature::make(1, 1, CODED_BITS_PER_OFDM_SYMBOL)),
+                gr::io_signature::make(1, 1, CODED_BITS_PER_OFDM_SYMBOL * sizeof(gr_complex))),
       d_current_symbol(0),
       d_log(log),
       d_debug(debug),
@@ -355,7 +355,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         //if LTF2 or DATA
         //TODO : change for LTF2
-        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1){// + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
         //if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
