@@ -26,6 +26,8 @@
 using namespace gr::ieee802_11;
 
 #define LINKTYPE_IEEE802_11 105 /* http://www.tcpdump.org/linktypes.html */
+#define BYTE_SERVICE 1
+#define BYTE_CRC32 4
 
 class decode_mac_impl : public decode_mac
 {
@@ -207,7 +209,7 @@ public:
 
         // skip service field
         boost::crc_32_type result;
-        result.process_bytes(out_bytes + 2, d_frame.psdu_size);
+        result.process_bytes(out_bytes + BYTE_SERVICE, d_frame.psdu_size);
         if (result.checksum() != 558161692) {
             dout << "checksum wrong -- dropping. expected 558161692 got: " << result.checksum() << std::endl;
             return;
@@ -219,7 +221,7 @@ public:
               d_frame.n_sym);
 
         // create PDU
-        pmt::pmt_t blob = pmt::make_blob(out_bytes + 2, d_frame.psdu_size - 4);
+        pmt::pmt_t blob = pmt::make_blob(out_bytes + BYTE_SERVICE, d_frame.psdu_size - BYTE_CRC32);
         d_meta =
             pmt::dict_add(d_meta, pmt::mp("dlt"), pmt::from_long(LINKTYPE_IEEE802_11));
 
@@ -231,7 +233,7 @@ public:
     {
 
         int state = 0;
-        std::memset(out_bytes, 0, d_frame.psdu_size + 2);
+        std::memset(out_bytes, 0, d_frame.psdu_size + BYTE_SERVICE);
 
         for (int i = 0; i < 7; i++) {
             if (decoded_bits[i]) {
@@ -256,7 +258,7 @@ public:
 
         dout << std::endl;
         dout << "psdu size" << d_frame.psdu_size << std::endl;
-        for (int i = 1; i < d_frame.psdu_size + 2; i++) {
+        for (int i = 0; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
             dout << std::setfill('0') << std::setw(2) << std::hex
                  << ((unsigned int)out_bytes[i] & 0xFF) << std::dec << " ";
             if (i % 16 == 15) {
@@ -264,7 +266,7 @@ public:
             }
         }
         dout << std::endl;
-        for (int i = 1; i < d_frame.psdu_size + 2; i++) {
+        for (int i = 0; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
             if ((out_bytes[i] > 31) && (out_bytes[i] < 127)) {
                 dout << ((char)out_bytes[i]);
             } else {
