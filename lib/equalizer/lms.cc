@@ -21,7 +21,7 @@
 
 using namespace gr::ieee802_11::equalizer;
 
-void equalize(gr_complex* in,
+void lms::equalize(gr_complex* in,
                         int n,
                         gr_complex* symbols,
                         gr_complex* bits,
