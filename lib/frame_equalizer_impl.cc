@@ -509,10 +509,10 @@ void frame_equalizer_impl::print_coding(frame_coding coding){
     switch (coding)
     {
     case BCC:
-        std::cout << "BCC";
+        dout << "BCC";
         break;
     case LDPC:
-        std::cout << "LDPC";
+        dout << "LDPC";
         break;
     default:
         break;
