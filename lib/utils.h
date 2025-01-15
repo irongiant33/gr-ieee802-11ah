@@ -109,7 +109,7 @@ public:
     int n_pad;
     int n_encoded_bits;
     // number of data bits, including service and padding (17-12)
-    int n_data_bits;
+    uint16_t n_data_bits;
 
     void print();
 };
@@ -154,7 +154,7 @@ void generate_bits(const char* psdu, char* data_bits, frame_param& frame);
  * 
  */
 
-void deinterleave(gr_complex* deinterleaved, gr_complex* rx_symbols);
+void deinterleave(gr_complex* deinterleaved, const gr_complex* rx_symbols);
 
 void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved);
 

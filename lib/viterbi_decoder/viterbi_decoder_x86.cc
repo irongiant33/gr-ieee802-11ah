@@ -318,7 +318,6 @@ void viterbi_decoder::reset()
         d_depuncture_pattern = PUNCTURE_2_3;
         d_k = 2;
         break;
-    case BPSK_3_4:
     case QPSK_3_4:
     case QAM16_3_4:
     case QAM64_3_4:

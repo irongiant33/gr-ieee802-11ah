@@ -184,8 +184,8 @@ int frame_equalizer_impl::general_work(int noutput_items,
             pilot_mapping[1] = -1;
         }
 
-        //TODO : add polarity computation for LTF2 (see Equation 23-41 p.3245)
-        //do we have LTF2 if only one spatial stream is used ? According to p.3199, there is one LTF per STS. For the moment we concentrate on STS = 1
+
+        //do we have LTF2 if only one spatial stream is used ? According to p.3199, there is one LTF per STS. For the moment we concentrate on STS = 1 only.
         
         else{
             //As from the end of LTF1 until end of DATA field, pilot mapping is {1, -1} for all even symbols and {-1, 1} for all odd symbols.
@@ -203,7 +203,9 @@ int frame_equalizer_impl::general_work(int noutput_items,
         uint8_t pilot1_index = PILOT1_INDEX;
         uint8_t pilot2_index = PILOT2_INDEX;
 
-        if(d_travel_pilots){
+        if(d_travel_pilots){//in the case of traveling pilots
+
+            //compute the indexes iaw table 23-21 (p. 3254)
             uint8_t m = (d_current_symbol - NUM_OFDM_SYMBOLS_IN_LTF1 - NUM_OFDM_SYMBOLS_IN_SIG_FIELD) % TRAVELING_PILOT_POSITIONS;
 
             pilot1_index = TRAVEL_PILOT1[m];
@@ -503,8 +505,19 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
     }
 }
 
-
-
+void frame_equalizer_impl::print_coding(frame_coding coding){
+    switch (coding)
+    {
+    case BCC:
+        std::cout << "BCC";
+        break;
+    case LDPC:
+        std::cout << "LDPC";
+        break;
+    default:
+        break;
+    }
+}
 
 
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
@@ -541,6 +554,9 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 
     //coding
     frame_coding coding = decoded_bits[3] == 1 ? frame_coding::LDPC : frame_coding::BCC;
+    if(coding == frame_coding::LDPC){
+        dout << "ERROR : frame coding (LDPC) unsupported" << std::endl;
+    }
     
     //mcs
     uint8_t mcs = decoded_bits[7] * 0x1 + decoded_bits[8] * 0x2 + decoded_bits[9] * 0x4 + decoded_bits[10] * 0x8;
@@ -566,16 +582,23 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     //travelling pilots
     d_travel_pilots = decoded_bits[24] == 1 ? true : false;
 
+    //NDP indication
+    bool ndp = !!(decoded_bits[25]);
+
     //crc received
     uint8_t rx_crc4 = decoded_bits[26] * 0x8 + decoded_bits[27] * 0x4 + decoded_bits[28] * 0x2 + decoded_bits[29] * 0x1;
 
     //debug
     dout << "sts : " << unsigned(nsts) << std::endl;
-    dout << "mcs : " << unsigned(mcs) << std::endl;
     dout << "Short GI : " << short_gi << std::endl;
+    dout << "Coding : ";
+    print_coding(coding);
+    dout << std::endl;
+    dout << "mcs : " << unsigned(mcs) << std::endl;
     dout << "Aggregation : " << aggregation << std::endl;
     dout << "length : " << unsigned(length) << std::endl;
     dout << "Travelling Pilots " << d_travel_pilots << std::endl;
+    dout << "NDP Indication " << ndp << std::endl;
     dout << "CRC-4 bit received : " << unsigned(rx_crc4) << std::endl;
     dout << "CRC-4 bit computed : " << unsigned(compute_crc(decoded_bits)) << std::endl;
 
@@ -685,44 +708,44 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
         break;
     case 1:
         d_frame_encoding = 1;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)36);//TODO
-        d_frame_mod = d_qpsk;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)36);//TODO
+        //d_frame_mod = d_qpsk;
         dout << "Encoding: 600 kbit/s   ";
         break;
     case 2:
         d_frame_encoding = 2;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)48);//TODO
-        d_frame_mod = d_qpsk;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)48);//TODO
+        //d_frame_mod = d_qpsk;
         dout << "Encoding: 900 kbit/s   ";
         break;
     case 3:
         d_frame_encoding = 3;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)72);//TODO
-        d_frame_mod = d_16qam;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)72);//TODO
+        //d_frame_mod = d_16qam;
         dout << "Encoding: 1200 kbit/s   ";
         break;
     case 4:
         d_frame_encoding = 4;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)96);//TODO
-        d_frame_mod = d_16qam;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)96);//TODO
+        //d_frame_mod = d_16qam;
         dout << "Encoding: 1800 kbit/s   ";
         break;
     case 5:
         d_frame_encoding = 5;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)144);//TODO
-        d_frame_mod = d_64qam;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)144);//TODO
+        //d_frame_mod = d_64qam;
         dout << "Encoding: 2400 kbit/s   ";
         break;
     case 6:
         d_frame_encoding = 6;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)192);//TODO
-        d_frame_mod = d_64qam;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)192);//TODO
+        //d_frame_mod = d_64qam;
         dout << "Encoding: 2700 kbit/s   ";
         break;
     case 7:
         d_frame_encoding = 7;
-        d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)216);//TODO
-        d_frame_mod = d_64qam;
+        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)216);//TODO
+        //d_frame_mod = d_64qam;
         dout << "Encoding: 3000 kbit/s   ";
         break;
     case 10:
@@ -742,7 +765,6 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
           d_frame_symbols);
           
     return true;
-
     
 }
 

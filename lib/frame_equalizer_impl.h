@@ -51,6 +51,7 @@ public:
 private:
     bool parse_signal(uint8_t* signal);
     bool decode_signal_field(gr_complex* rx_bits);
+    void print_coding(frame_coding coding);
     //void deinterleave(gr_complex* rx_symbols);
     //void unrepeat(gr_complex* rx_symbols);
     uint8_t compute_crc(uint8_t* crc_input);

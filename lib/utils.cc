@@ -21,13 +21,13 @@
 #include <cstring>
 
 using gr::ieee802_11::BPSK_1_2;
-using gr::ieee802_11::BPSK_3_4;
 using gr::ieee802_11::QPSK_1_2;
 using gr::ieee802_11::QPSK_3_4;
 using gr::ieee802_11::QAM16_1_2;
 using gr::ieee802_11::QAM16_3_4;
 using gr::ieee802_11::QAM64_2_3;
 using gr::ieee802_11::QAM64_3_4;
+using gr::ieee802_11::QAM64_5_6;
 using gr::ieee802_11::BPSK_1_2_REP;
 
 ofdm_param::ofdm_param(Encoding e)
@@ -39,64 +39,71 @@ ofdm_param::ofdm_param(Encoding e)
         n_bpsc = 1;
         n_cbps = 24;
         n_dbps = 12;
-        rate_field = 0x00; // i.e. MCS 0b00000000
+        //rate_field = 0x00; // i.e. MCS 0b00000000
         constellation =  gr::ieee802_11::constellation_bpsk::make();
-        break;
-
-    case BPSK_3_4:
-        n_bpsc = 1;
-        n_cbps = 24;
-        n_dbps = 18;
-        rate_field = 0x0F; // 0b00001111
         break;
 
     case QPSK_1_2:
         n_bpsc = 2;
         n_cbps = 48;
         n_dbps = 24;
-        rate_field = 0x05; // 0b00000101
+        //rate_field = 0x05; // 0b00000101
+        constellation =  gr::ieee802_11::constellation_qpsk::make();
         break;
 
     case QPSK_3_4:
         n_bpsc = 2;
-        n_cbps = 96;
-        n_dbps = 72;
-        rate_field = 0x07; // 0b00000111
+        n_cbps = 48;
+        n_dbps = 36;
+        //rate_field = 0x07; // 0b00000111
+        constellation =  gr::ieee802_11::constellation_qpsk::make();
         break;
 
     case QAM16_1_2:
         n_bpsc = 4;
-        n_cbps = 192;
-        n_dbps = 96;
-        rate_field = 0x09; // 0b00001001
+        n_cbps = 96;
+        n_dbps = 48;
+        //rate_field = 0x09; // 0b00001001
+        constellation =  gr::ieee802_11::constellation_16qam::make();
         break;
 
     case QAM16_3_4:
         n_bpsc = 4;
-        n_cbps = 192;
-        n_dbps = 144;
-        rate_field = 0x0B; // 0b00001011
+        n_cbps = 96;
+        n_dbps = 72;
+        //rate_field = 0x0B; // 0b00001011
+        constellation =  gr::ieee802_11::constellation_16qam::make();
         break;
 
     case QAM64_2_3:
         n_bpsc = 6;
-        n_cbps = 288;
-        n_dbps = 192;
-        rate_field = 0x01; // 0b00000001
+        n_cbps = 144;
+        n_dbps = 96;
+        //rate_field = 0x01; // 0b00000001
+        constellation =  gr::ieee802_11::constellation_16qam::make();
         break;
 
     case QAM64_3_4:
         n_bpsc = 6;
-        n_cbps = 288;
-        n_dbps = 216;
-        rate_field = 0x03; // 0b00000011
+        n_cbps = 144;
+        n_dbps = 108;
+        //rate_field = 0x03; // 0b00000011
+        constellation =  gr::ieee802_11::constellation_64qam::make();
+        break;
+
+    case QAM64_5_6:
+        n_bpsc = 6;
+        n_cbps = 144;
+        n_dbps = 120;
+        //rate_field = 0x03; // 0b00000011
+        constellation =  gr::ieee802_11::constellation_64qam::make();
         break;
     
     case BPSK_1_2_REP:
         n_bpsc = 1;
         n_cbps = 12;
         n_dbps = 6;
-        rate_field = 0x0a; // i.e. MCS 0b00001010
+        //rate_field = 0x0a; // i.e. MCS 0b00001010
         constellation =  gr::ieee802_11::constellation_bpsk::make();
         break;
 
@@ -215,6 +222,7 @@ void puncturing(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
         case BPSK_1_2:
         case QPSK_1_2:
         case QAM16_1_2:
+        case BPSK_1_2_REP:
             *out = in[i];
             out++;
             break;
@@ -226,7 +234,6 @@ void puncturing(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
             }
             break;
 
-        case BPSK_3_4:
         case QPSK_3_4:
         case QAM16_3_4:
         case QAM64_3_4:
@@ -236,6 +243,7 @@ void puncturing(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
                 out++;
             }
             break;
+        //TODO : Add QAM64_5_6
         defaut:
             assert(false);
             break;
@@ -304,7 +312,7 @@ void generate_bits(const char* psdu, char* data_bits, frame_param& frame)
 }
 
 
-void deinterleave(gr_complex* deinterleaved, gr_complex* rx_symbols)
+void deinterleave(gr_complex* deinterleaved, const gr_complex* rx_symbols)
 {   
     for (int i = 0; i < CODED_BITS_PER_OFDM_SYMBOL; i++) {
         deinterleaved[i] = rx_symbols[interleaver_pattern[i]];
@@ -327,7 +335,7 @@ void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved){
 
         /*
         if((deinterleaved[i].real() < 0) != (deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL].real() * (s[i] == 0 ? 1 : -1) < 0 )){
-            dout << "ERROR in unrepeat" << std::endl;
+            std::cout << "ERROR in unrepeat" << std::endl;
         }
         */
 
