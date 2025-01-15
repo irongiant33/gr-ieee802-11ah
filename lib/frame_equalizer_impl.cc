@@ -220,7 +220,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         // compensate sampling offset        
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0,
-                                                2 * M_PI * d_current_symbol * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI) * 
+                                                - 2 * M_PI * d_current_symbol * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI) * 
                                                     (d_epsilon0 + d_er) * (i - SAMPLES_PER_OFDM_SYMBOL / 2) / SAMPLES_PER_OFDM_SYMBOL));
             
             //@irongiant33 To answer your question "what is 32? Half of the 802.11a number of subcarriers?". The "32" seem indeed to come from the number of subcarriers in 802.11a. The sampling offset compensation performed is described in Equation 7 of paper "Frequency Offset Estimation and Correction in the IEEE 802.11a WLAN" (see https://openofdm.readthedocs.io/en/latest/_downloads/vtc04_freq_offset.pdf). The number (i - 32) actually corresponds to the k variable that ranges from -26 to 26. Consequently, you should replace "32" with "SAMPLES_PER_OFDM_SYMBOL/2" in your code.
