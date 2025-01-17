@@ -54,8 +54,8 @@ private:
     void print_coding(frame_coding coding);
     //void deinterleave(gr_complex* rx_symbols);
     //void unrepeat(gr_complex* rx_symbols);
-    uint8_t compute_crc(uint8_t* crc_input);
-    uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len);
+    //uint8_t compute_crc(uint8_t* crc_input);
+    //uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len);
 
     equalizer::base* d_equalizer;
     gr::thread::mutex d_mutex;

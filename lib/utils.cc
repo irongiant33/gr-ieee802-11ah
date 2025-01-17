@@ -251,22 +251,40 @@ void puncturing(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
     }
 }
 
+void repeat(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
+{
+    char s[NUM_BITS_UNREPEATED_SIG_SYMBOL] = {1,0,0,0,0,1,0,1,0,1,1,1};
 
-void interleave(
-    const char* in, char* out, frame_param& frame, ofdm_param& ofdm, bool reverse)
+    for (int i = 0; i < frame.n_sym; i++) {
+        for(int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL/2; j++){
+            
+            //simple repeat
+            out[i * CODED_BITS_PER_OFDM_SYMBOL + j] = in[i * CODED_BITS_PER_OFDM_SYMBOL/2 + j];
+            //XORed repeat
+            out[i * CODED_BITS_PER_OFDM_SYMBOL + j + CODED_BITS_PER_OFDM_SYMBOL/2] = in[i * CODED_BITS_PER_OFDM_SYMBOL/2 + j] ^ s[j];
+
+        }
+    }
+
+}
+
+void interleave(const char* in, char* out, frame_param& frame, ofdm_param& ofdm, bool reverse)
 {
 
-    int n_cbps = ofdm.n_cbps;
+    int n_cbps = ofdm.n_cbps >= CODED_BITS_PER_OFDM_SYMBOL ? ofdm.n_cbps : CODED_BITS_PER_OFDM_SYMBOL;
+
     int first[MAX_BITS_PER_SYM];
     int second[MAX_BITS_PER_SYM];
     int s = std::max(ofdm.n_bpsc / 2, 1);
+    int ncol = 8;
+    int nrow = 3 * ofdm.n_bpsc;
 
     for (int j = 0; j < n_cbps; j++) {
-        first[j] = s * (j / s) + ((j + int(floor(16.0 * j / n_cbps))) % s);
+        first[j] = s * (j / s) + ((j + int(floor(ncol * j / n_cbps))) % s); // Eq. 21-82 p. 3078
     }
 
     for (int i = 0; i < n_cbps; i++) {
-        second[i] = 16 * i - (n_cbps - 1) * int(floor(16.0 * i / n_cbps));
+        second[i] = ncol * i - (n_cbps - 1) * int(floor(i / nrow)); // Eq. 21-83 p. 3078
     }
 
     for (int i = 0; i < frame.n_sym; i++) {
@@ -280,11 +298,39 @@ void interleave(
     }
 }
 
+void deinterleave(const uint8_t* in, uint8_t* out, frame_param& frame, ofdm_param& ofdm, bool reverse)
+{
+
+    int n_cbps = ofdm.n_cbps >= CODED_BITS_PER_OFDM_SYMBOL ? ofdm.n_cbps : CODED_BITS_PER_OFDM_SYMBOL;
+
+    int first[MAX_BITS_PER_SYM];
+    int second[MAX_BITS_PER_SYM];
+    int s = std::max(ofdm.n_bpsc / 2, 1);
+    int ncol = 8;
+    int nrow = 3 * ofdm.n_bpsc;
+
+    for (int j = 0; j < n_cbps; j++) {
+        first[j] = s * (j / s) + ((j + int(floor(ncol * j / n_cbps))) % s); // Eq. 21-82 p. 3078
+    }
+
+    for (int i = 0; i < n_cbps; i++) {
+        second[i] = ncol * i - (n_cbps - 1) * int(floor(i / nrow)); // Eq. 21-83 p. 3078
+    }
+
+    for (int k = 0; k < n_cbps; k++) {
+        if (reverse) {
+            out[second[first[k]]] = in[k];
+        } else {
+            out[k] = in[second[first[k]]];
+        }
+    }
+}
+
 
 void split_symbols(const char* in, char* out, frame_param& frame, ofdm_param& ofdm)
 {
 
-    int symbols = frame.n_sym * 48;
+    int symbols = frame.n_sym * CODED_BITS_PER_OFDM_SYMBOL;
 
     for (int i = 0; i < symbols; i++) {
         out[i] = 0;
@@ -300,9 +346,9 @@ void split_symbols(const char* in, char* out, frame_param& frame, ofdm_param& of
 void generate_bits(const char* psdu, char* data_bits, frame_param& frame)
 {
 
-    // first 16 bits are zero (SERVICE/DATA field)
-    memset(data_bits, 0, 16);
-    data_bits += 16;
+    // first 8 bits are zero (SERVICE field) (see p. 3248)
+    memset(data_bits, 0, 8);
+    data_bits += 8;
 
     for (int i = 0; i < frame.psdu_size; i++) {
         for (int b = 0; b < 8; b++) {
@@ -333,11 +379,73 @@ void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved){
         unrepeated[i] = deinterleaved[i] * gr_complex(0.5,0) + //first sample
                           deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL] * gr_complex((s[i] == 0 ? 0.5 : -0.5),0); //second sample, inverted in case s == 1
 
-        /*
+        
         if((deinterleaved[i].real() < 0) != (deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL].real() * (s[i] == 0 ? 1 : -1) < 0 )){
             std::cout << "ERROR in unrepeat" << std::endl;
         }
-        */
+        
 
     }
+}
+
+// Compute the crc-4bit, a byte at a time using the table approach
+// This code was partially generated from the crcany program of Mark Adler (see https://github.com/madler/crcany)
+uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len) {
+    unsigned char const *data = static_cast<unsigned char const *>(mem);
+    if (data == nullptr)
+        return 0;
+    crc <<= 4;
+    for (size_t i = 0; i < len; i++) {
+        crc = table_byte[crc ^ data[i]];
+    }
+    crc >>= 4;
+
+    return crc ^ 0xf;
+}
+
+uint8_t compute_crc(uint8_t* decoded_bits){
+
+    //copy first 26 bits, inverting the first four
+    uint8_t num_crc_input_bytes = 4;
+    uint32_t crc4_input_bits = 0;
+    for(int i = 0; i < 26; i++){
+        crc4_input_bits += (i < 4 ? (1 - decoded_bits[i]) : (decoded_bits[i])) * pow(2, (31 - i));
+    }
+
+    /*
+    std::cout << "To 32: ";
+    std::cout << std::bitset<32>(crc4_input_bits);
+    std::cout << std::endl;
+    */
+
+    //right shift by 6 (32 - 26) bits
+    crc4_input_bits = crc4_input_bits >> 6;
+
+    //debug
+    /*
+    std::cout << "Right shift: ";
+    std::cout << std::bitset<32>(crc4_input_bits);
+    std::cout << std::endl;
+    */
+    
+
+    //split into 4 bytes (to hold the 32 bits)
+    uint8_t crc4_input_bytes[num_crc_input_bytes];
+    crc4_input_bytes[0] = (crc4_input_bits & 0xff000000) >> 24;
+    crc4_input_bytes[1] = (crc4_input_bits & 0x00ff0000) >> 16;
+    crc4_input_bytes[2] = (crc4_input_bits & 0x0000ff00) >> 8;
+    crc4_input_bytes[3] = (crc4_input_bits & 0x000000ff);
+
+    //debug
+    /*
+    dout << "Post Formating: ";
+    for(int i = 0; i < 4; i++){
+        std::cout << std::bitset<8>(crc4_input_bytes[i]);
+    }
+    dout << std::endl;
+    */
+    
+
+    uint8_t computed_crc = 0;
+    return crc4HaLoW_byte(computed_crc, crc4_input_bytes, num_crc_input_bytes);
 }

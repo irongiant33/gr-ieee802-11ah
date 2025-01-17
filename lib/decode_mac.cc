@@ -107,60 +107,43 @@ public:
                 //TODO : uncomment this
                 //dout << "copy one symbol, copied " << copied << " out of "
                      //<< d_frame.n_sym << std::endl;
-
-                //perform here deinterleaving and unrepeating
-
-                deinterleave(d_deinterleaved, in);
-
-                d_rx_symbols = d_deinterleaved;
-
-                uint8_t n_rx_symbols = CODED_BITS_PER_OFDM_SYMBOL;
                 
                 //if MCS = 10
                 if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
-                    //unrepeat the symbols
+                    
+                    //deinterleave the complex symbols
+                    gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+                    deinterleave(d_deinterleaved, in);
+
+                    //unrepeat the complex symbols
                     unrepeat(d_unrepeated, d_deinterleaved);
 
-                    d_rx_symbols = d_unrepeated;
-
-                    n_rx_symbols /= 2;
-                    //add the decided bit into d_encoded_bits
-                    /*
-                    for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL/2; j++){
-                        d_encoded_bits[copied * CODED_BITS_PER_OFDM_SYMBOL/2 + j] = d_ofdm.constellation->decision_maker(&d_unrepeated[j]);
+                    //bit decision last
+                    for (int j = 0; j < d_ofdm.n_cbps; j++){
+                        d_rx_bits[j] = d_ofdm.constellation->decision_maker(&d_unrepeated[j]);
                     }
-                    */
                 }
 
-                for (int j = 0; j < n_rx_symbols; j++){
-                    //int k = 0;
-                    for (int k = 0; k < d_ofdm.n_bpsc; k++){
-                        //d_encoded_bits[copied * d_ofdm.n_cbps + j * d_ofdm.n_bpsc + k] = (d_ofdm.constellation->decision_maker(&d_rx_symbols[j]) & (1 << (d_ofdm.n_bpsc-1 - k))) >> (d_ofdm.n_bpsc-1 - k);
-                        d_encoded_bits[copied * d_ofdm.n_cbps + j * d_ofdm.n_bpsc + k] = !!(d_ofdm.constellation->decision_maker(&d_rx_symbols[j]) & (1 << k));
-
-                        
-                        if(copied == 0 && j ==0 && k == 1){
-                            //std::bitset<32> b(d_ofdm.constellation->decision_maker(&d_rx_symbols[j]));
-
-                            //dout << "constellation in complex " << d_rx_symbols[j] << std::endl;
-                            //dout << "constellation bit at k = "<<  k << " is " << d_ofdm.constellation->decision_maker(&d_rx_symbols[j]) << std::endl;
-                            
-                            /*
-                            gr_complex i1q1 = gr_complex(1,1);//should be mapped to 3
-                            gr_complex im1qm1 = gr_complex(-1,-1);//should be mapped to 0
-                            gr_complex i1qm1 = gr_complex(1,-1);//should be mapped to 2
-                            gr_complex im1q1 = gr_complex(-1,1);//should be mapped to 1
-
-                            dout << "constellation I : 1 ; Q : 1 : " << d_ofdm.constellation->decision_maker(&i1q1) << std::endl;
-                            dout << "constellation I : -1 ; Q : -1 : " << d_ofdm.constellation->decision_maker(&im1qm1) << std::endl;
-                            dout << "constellation I : 1 ; Q : -1 : " << d_ofdm.constellation->decision_maker(&i1qm1) << std::endl;
-                            dout << "constellation I : -1 ; Q : 1 : " << d_ofdm.constellation->decision_maker(&im1q1) << std::endl;
-                            */
-
+                //for any other MCS
+                else{
+                    
+                    //bit decision first
+                    for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL; j++){
+                        for(int k = 0; k < d_ofdm.n_bpsc; k++){
+                            d_rx_bits[j * d_ofdm.n_bpsc + k] = !!(d_ofdm.constellation->decision_maker(&in[j]) &(1 << k));
                         }
-                        
                     }
+
+                    //deinterleave the bits
+                    uint8_t d_deinterleaved[MAX_BITS_PER_SYM];
+                    deinterleave(d_rx_bits, d_deinterleaved, d_frame, d_ofdm);
+                    
+                    //copy deinterleaved bits back into d_rx_bits
+                    memcpy(d_rx_bits, d_deinterleaved, d_ofdm.n_cbps * sizeof(uint8_t));
                 }
+
+                //copy d_rx_bits into d_encoded_bits for future conv decoding
+                memcpy(d_encoded_bits + copied * d_ofdm.n_cbps, d_rx_bits, d_ofdm.n_cbps);
 
                 /*
                 //for all other MCS's
@@ -428,7 +411,7 @@ private:
 
     uint8_t out_bytes[MAX_PSDU_SIZE + 6]; // 2 for signal field
 
-    gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
+    //gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
     gr_complex d_unrepeated[NUM_BITS_UNREPEATED_SIG_SYMBOL];
     uint8_t d_encoded_bits[MAX_ENCODED_BITS] = {0};
 
