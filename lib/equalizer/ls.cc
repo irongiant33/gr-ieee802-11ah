@@ -68,14 +68,24 @@ void ls::equalize(gr_complex* in,
     }
     */
     if(n < NUM_OFDM_SYMBOLS_IN_LTF1){//if we are in LTF1
+        double signal = 0;
+        double noise = 0;
+
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             if ((i == 16) || (i < 3) || (i > 29)) {
                 continue;//skip if dead subcarrier
             }
             d_H[i] *= gr_complex((float) n / (n + 1), 0);//rescale current mean iaw previous and current mean sizes
             d_H[i] += (in[i] / LONG[i]) / gr_complex(n + 1, 0);//add latest channel estimate, scaled to current mean size
+
+            if(n == NUM_OFDM_SYMBOLS_IN_LTF1 - 1){//compute snr on the last LTS, on which we are the most confident on the channel value
+                signal += std::pow(std::abs(d_H[i]), 2);
+                noise += std::pow(std::abs(in[i] - d_H[i] * LONG[i]), 2);
+            }
         }
-        
+
+        d_snr = 10 * std::log10(signal / noise);
+
         //debug
         /*
         std::cout << "From Equalizer LS : In at 0 is " << abs(in[0]) << std::endl;
