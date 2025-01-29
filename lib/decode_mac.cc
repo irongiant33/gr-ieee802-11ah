@@ -285,13 +285,13 @@ public:
         //d_ofdm.print();
 
         //debug
-        dout << "Frame data bits : " << d_frame.n_data_bits << std::endl;
+        //dout << "Frame data bits : " << d_frame.n_data_bits << std::endl;
 
         //round n_data_bits to superior and closest multiple of 8
         d_frame.n_data_bits  += 7;
         d_frame.n_data_bits  &= 0xfff8;
 
-        dout << "Frame data bits now : " << d_frame.n_data_bits << std::endl;
+        //dout << "Frame data bits now : " << d_frame.n_data_bits << std::endl;
         
 
         if(d_frame.n_data_bits % 8 != 0){
@@ -333,6 +333,25 @@ public:
             dout << "checksum wrong -- dropping. expected 558161692 got: " << result.checksum() << std::endl;
             return;
         }
+
+        /* Florian's Patch */
+        /*        
+        result.process_bytes(out_bytes + BYTE_SERVICE, d_frame.psdu_size - 4);
+        boost::uint32_t u32_CRC = result.checksum();
+        boost::uint32_t u32_CRC_rec = 0;
+        boost::uint32_t u32_mask= 0x00FFFFFF;
+        memcpy(&u32_CRC_rec,out_bytes + BYTE_SERVICE + d_frame.psdu_size - 4, sizeof(uint32_t));
+        //if (u32_CRC != 558161692) {
+        if ((u32_CRC&u32_mask) != (u32_CRC_rec&u32_mask)) {
+            dout << "checksum wrong -- dropping" << std::endl;
+            dout << "Result checksum " << result.checksum() << std::endl;
+            dout << "Rceived checksum " << u32_CRC_rec << std::endl;
+            dout << "Decode MAC: frame start -- len " << d_frame.psdu_size << "  symbols "
+                         << d_frame.n_sym << "  encoding " << d_ofdm.encoding << std::endl;
+            print_output();
+            return;
+        } 
+        */
 
         mylog("encoding: {} - length: {} - symbols: {}",
               d_ofdm.encoding,
