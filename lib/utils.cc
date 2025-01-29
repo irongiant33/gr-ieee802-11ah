@@ -379,12 +379,12 @@ void unrepeat(gr_complex* unrepeated, gr_complex* deinterleaved){
         unrepeated[i] = deinterleaved[i] * gr_complex(0.5,0) + //first sample
                           deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL] * gr_complex((s[i] == 0 ? 0.5 : -0.5),0); //second sample, inverted in case s == 1
 
-        
+        /*
         if((deinterleaved[i].real() < 0) != (deinterleaved[i + NUM_BITS_UNREPEATED_SIG_SYMBOL].real() * (s[i] == 0 ? 1 : -1) < 0 )){
             std::cout << "ERROR in unrepeat" << std::endl;
         }
+        */
         
-
     }
 }
 
