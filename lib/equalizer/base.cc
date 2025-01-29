@@ -46,9 +46,9 @@ const gr_complex base::POLARITY[127] = {
 std::vector<gr_complex> base::get_csi()
 {
     std::vector<gr_complex> csi;
-    csi.reserve(52);
-    for (int i = 0; i < 64; i++) {
-        if ((i == 32) || (i < 6) || (i > 58)) {
+    csi.reserve(26);
+    for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
+        if ((i == 16) || (i < 3) || (i > 29)) {
             continue;
         }
         csi.push_back(d_H[i]);
