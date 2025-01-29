@@ -144,6 +144,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
             d_current_symbol = 0;
             d_frame_symbols = 0;
             d_sig = 0;
+            d_sig_decode_sucess = false;
             d_travel_pilots = false;
             d_frame_mod = d_bpsk;
 
@@ -360,7 +361,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
         //if LTF2 or DATA
         //TODO : change for LTF2
-        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD && d_sig_decode_sucess) {
         //if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
@@ -659,6 +660,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 
     if(rx_crc4 == compute_crc(decoded_bits)){
         dout << "SIG field read with success" << std::endl;
+        d_sig_decode_sucess = true;
     }
     else{
         dout << "ERROR while reading SIG field : bad crc" << std::endl;

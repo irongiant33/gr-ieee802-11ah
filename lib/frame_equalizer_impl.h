@@ -64,6 +64,7 @@ private:
     bool d_log;
     int d_current_symbol;
     int d_sig;//the current sig field number
+    bool d_sig_decode_sucess;
     uint8_t d_sig_field_bits[200] = {0};//the bits contained in the sig field before decoding
     uint8_t d_crc4_input_bytes[4];//the input bytes to the crc computer
     /*
