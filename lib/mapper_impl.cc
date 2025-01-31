@@ -162,6 +162,9 @@ public:
                 free(scrambled_data);
                 free(encoded_data);
                 free(punctured_data);
+                if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                    free(repeated_data);
+                }
                 free(interleaved_data);
                 free(symbols);
 
