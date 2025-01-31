@@ -396,7 +396,7 @@ public:
 
         dout << std::endl;
         dout << "psdu size" << d_frame.psdu_size << std::endl;
-        for (int i = 0; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
+        for (int i = BYTE_SERVICE; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
             dout << std::setfill('0') << std::setw(2) << std::hex
                  << ((unsigned int)out_bytes[i] & 0xFF) << std::dec << " ";
             if (i % 16 == 15) {
@@ -404,7 +404,7 @@ public:
             }
         }
         dout << std::endl;
-        for (int i = 0; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
+        for (int i = BYTE_SERVICE; i < d_frame.psdu_size + BYTE_SERVICE; i++) {
             if ((out_bytes[i] > 31) && (out_bytes[i] < 127)) {
                 dout << ((char)out_bytes[i]);
             } else {
