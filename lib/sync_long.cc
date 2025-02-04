@@ -139,7 +139,6 @@ public:
                 }
 
                 // send LTFs + SIG + DATA downstream with GIs filtered out
-                // TODO : implement short GI
                 if (rel >= 0 && (rel < 2*SAMPLES_PER_OFDM_SYMBOL || ((rel - 2*SAMPLES_PER_OFDM_SYMBOL) % (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI)) > (SAMPLES_PER_GI - 1))) {
                     //we mulitply by +d_freq_offset because we take conj of the second peak for freq offset computation (and not conj of first one)
                     out[o] = in_delayed[i] * exp(gr_complex(0, d_freq_offset * d_offset));

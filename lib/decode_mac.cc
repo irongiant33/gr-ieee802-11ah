@@ -59,8 +59,7 @@ public:
         std::vector<gr::tag_t> tags;
         const uint64_t nread = this->nitems_read(0);
 
-        //TODO : uncomment this
-        //dout << "Decode MAC: input " << ninput_items[0] << std::endl;
+        dout << "Decode MAC: input " << ninput_items[0] << std::endl;
 
         while (i < ninput_items[0]) {
 
@@ -104,9 +103,8 @@ public:
 
             if (copied < d_frame.n_sym) {
 
-                //TODO : uncomment this
-                //dout << "copy one symbol, copied " << copied << " out of "
-                     //<< d_frame.n_sym << std::endl;
+                dout << "copy one symbol, copied " << copied << " out of "
+                     << d_frame.n_sym << std::endl;
                 
                 //if MCS = 10
                 if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
@@ -145,22 +143,6 @@ public:
                 //copy d_rx_bits into d_encoded_bits for future conv decoding
                 memcpy(d_encoded_bits + copied * d_ofdm.n_cbps, d_rx_bits, d_ofdm.n_cbps);
 
-                /*
-                //for all other MCS's
-                else{
-                    //add the decided bit into d_encoded_bits
-                    //TODO : rename CODED_BITS_PER_OFDM_SYMBOL to SINGLE_CARRIER_PER_OFDM_SYMBOL
-                    for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL; j++){
-                        //int k = 0;
-                        for (int k = 0; k < d_ofdm.n_bpsc; k++){
-                            d_encoded_bits[copied * d_ofdm.n_cbps + j * d_ofdm.n_bpsc + k] = !!(d_ofdm.constellation->decision_maker(&d_deinterleaved[j]) & (1 << (d_ofdm.n_bpsc-1 - k)));
-                            
-                        }
-                    }
-                }
-                */
-
-                //std::memcpy(d_rx_symbols + (copied * CODED_BITS_PER_OFDM_SYMBOL), in, CODED_BITS_PER_OFDM_SYMBOL * sizeof(gr_complex));
                 copied++;
 
                 if (copied == d_frame.n_sym) {
@@ -184,142 +166,17 @@ public:
 
     void decode()
     {   
-        //TODO
-        /*
-        for (int i = 0; i < d_frame.n_sym * CODED_BITS_PER_OFDM_SYMBOL; i++) {
-            for (int k = 0; k < d_ofdm.n_bpsc; k++) {
-                d_rx_bits[i * d_ofdm.n_bpsc + k] = !!(d_rx_symbols[i] & (1 << k));
-            }
-        }
-        */
-        
-        //debug
-        //gr_complex sum0 = gr_complex(0,0);
-        /*
-        //loop over all symbols
-        for (int i = 0; i < d_frame.n_sym; i++){
 
-            deinterleave(d_deinterleaved, d_rx_symbols + (i * CODED_BITS_PER_OFDM_SYMBOL));
-
-
-            //if MCS = 10
-            if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
-                //unrepeat the symbols
-                //dout << "Current symbol" << i << std::endl;
-
-                unrepeat(d_unrepeated, d_deinterleaved);
-
-                //add the decided bit into d_encoded_bits
-                for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL/2; j++){
-                    d_encoded_bits[i * CODED_BITS_PER_OFDM_SYMBOL/2 + j] = d_ofdm.constellation->decision_maker(&d_unrepeated[j]);
-
-                    //debug
-                    //sum0 += d_unrepeated[j];
-                }
-            }
-
-            //for all other MCS's
-            else{
-
-                //add the decided bit into d_encoded_bits
-                for (int j = 0; j < CODED_BITS_PER_OFDM_SYMBOL; j++){
-                    int k = 0;
-                    //for (int k = 0; k < d_ofdm.n_bpsc; k++){
-                        //TODO : rename CODED_BITS_PER_OFDM_SYMBOL to SINGLE_CARRIER_PER_OFDM_SYMBOL
-                        d_encoded_bits[i * CODED_BITS_PER_OFDM_SYMBOL * d_ofdm.n_bpsc + j * d_ofdm.n_bpsc + k] = !!(d_ofdm.constellation->decision_maker(&d_deinterleaved[j]) & (1 << (d_ofdm.n_bpsc-1 - k)));
-
-                        
-                        if(i = 0 && j == 0){
-                            dout << "Constellation point : " << d_deinterleaved[j] << std::endl;
-                            dout << "k" << std::endl;
-                            dout << !!(d_ofdm.constellation->decision_maker(&d_deinterleaved[j]) & (1 << (d_ofdm.n_bpsc-1 - k)));
-                }
-                        
-                    //}
-                }
-            }
-        }
-
-        */
-
-        
-
-        //debug
-        //std::cout << "Frame Sym : " << d_frame.n_sym << std::endl;
-        //std::cout << "SUM 0 : " << sum0 << std::endl;
-        
-
-        /*
-        dout << "Pre decode: ";
-        for(int i = 0; i < 3024; i++)
-        {
-            if (d_encoded_bits[i] == 1){
-                dout << "1";
-            }
-            else if(d_encoded_bits[i] == 0){
-                dout << "0";
-            }
-            else{
-                dout << "E";
-            }
-
-            dout << ",";
-        }
-        dout << std::endl;
-        */
-        
-        
-        
-        
-        
-    
-        /*
-        int sum1 = 0;
-        for(int i = 0; i < 81760; i++){
-            sum1 += d_encoded_bits[i];
-        }
-        std::cout << "SUM 1 : " << sum1 << std::endl;
-        */
-       
-        //d_frame.print();
-        //d_ofdm.print();
-
-        //debug
-        //dout << "Frame data bits : " << d_frame.n_data_bits << std::endl;
-
-        //round n_data_bits to superior and closest multiple of 8
+        //round n_data_bits to superior and closest multiple of 8 (viterbi algorithm works byte per byte)
         d_frame.n_data_bits  += 7;
         d_frame.n_data_bits  &= 0xfff8;
 
-        //dout << "Frame data bits now : " << d_frame.n_data_bits << std::endl;
-        
 
         if(d_frame.n_data_bits % 8 != 0){
             dout << "ERROR : n data bits should be a multiple of 8 ! " << std::endl;
         }
         
         uint8_t* decoded = d_decoder.decode(&d_ofdm, &d_frame, d_encoded_bits);
-
-
-        /*
-        dout << "Post decode: ";
-        for(int i = 0; i < 264; i++)
-        {
-            if (decoded[i] == 1){
-                dout << "1";
-            }
-            else if(decoded[i] == 0){
-                dout << "0";
-            }
-            else{
-                dout << "E";
-            }
-
-            dout << ",";
-        }
-        dout << std::endl;
-        */
-        
 
         descramble(decoded);
 
@@ -333,25 +190,6 @@ public:
             dout << "checksum wrong -- dropping. expected 558161692 got: " << result.checksum() << std::endl;
             return;
         }
-
-        /* Florian's Patch */
-        /*        
-        result.process_bytes(out_bytes + BYTE_SERVICE, d_frame.psdu_size - 4);
-        boost::uint32_t u32_CRC = result.checksum();
-        boost::uint32_t u32_CRC_rec = 0;
-        boost::uint32_t u32_mask= 0x00FFFFFF;
-        memcpy(&u32_CRC_rec,out_bytes + BYTE_SERVICE + d_frame.psdu_size - 4, sizeof(uint32_t));
-        //if (u32_CRC != 558161692) {
-        if ((u32_CRC&u32_mask) != (u32_CRC_rec&u32_mask)) {
-            dout << "checksum wrong -- dropping" << std::endl;
-            dout << "Result checksum " << result.checksum() << std::endl;
-            dout << "Rceived checksum " << u32_CRC_rec << std::endl;
-            dout << "Decode MAC: frame start -- len " << d_frame.psdu_size << "  symbols "
-                         << d_frame.n_sym << "  encoding " << d_ofdm.encoding << std::endl;
-            print_output();
-            return;
-        } 
-        */
 
         mylog("encoding: {} - length: {} - symbols: {}",
               d_ofdm.encoding,

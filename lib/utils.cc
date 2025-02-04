@@ -130,13 +130,11 @@ frame_param::frame_param(ofdm_param& ofdm, int psdu_length)
 
     psdu_size = psdu_length;
 
-    // number of symbols (EQN17-11, page 2817 of spec for 802.11a/g). Possibly 16 is the number of SIG bits and 8 is the number of pad/tail bits?
     // number of symbols p.3248 "Data Field" for HaLow OR EQN23-65 on p.3302 OR EQN 23-66 on p.3303
     n_sym = (int)ceil((8 * psdu_size + 8 + 6) / (double) ofdm.n_dbps);//see Equation 23-79
 
     n_data_bits = n_sym * ofdm.n_dbps;
 
-    // number of padding bits (EQN17-13, page 2817 of spec for 802.11a/g)
     // number of symbols p.3248 "Data Field" for HaLow
     n_pad = n_data_bits - (8 * psdu_size + 8 + 6);
 

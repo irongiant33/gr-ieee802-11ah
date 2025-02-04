@@ -134,8 +134,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
 
     while ((i < ninput_items[0]) && (o < noutput_items)) {
         
-        //debug
-        //dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
+        dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
 
         get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_start"));
 
@@ -157,25 +156,15 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         // not interesting -> skip. Why is this not interesting? uncommenting for now because I think it terminates too early for HaLow
+        //TODO adapt this for halow
         /*
         if (d_current_symbol > (d_frame_symbols + 2)) {
             i++;
             continue;
-        }*/
-
-        std::memcpy(current_symbol, in + i * SAMPLES_PER_OFDM_SYMBOL, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
-
-        //debug traveling pilots
-        /*
-        const int TRAVELING_PILOTS_POSITIONS = 13;
-        int p_travel_0[TRAVELING_PILOTS_POSITIONS] = {-2,-10,-5,-13,-8,-3,-11,-6,-1,-9,-4,-12,-7};
-        int p_travel_1[TRAVELING_PILOTS_POSITIONS] = {12,  4, 9,  1, 6,11,  3, 8,13, 5,10,  2, 7};
-
-        for (int i = 0; i < TRAVELING_PILOTS_POSITIONS; i++){
-            p_travel_0[i] += 16;
-            p_travel_1[i] += 16;
         }
         */
+
+        std::memcpy(current_symbol, in + i * SAMPLES_PER_OFDM_SYMBOL, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
 
         //we define pilot_mapping, which holds the values of the pilots iaw pilot mapping p.3253
         gr_complex pilot_mapping[NUM_PILOTS];
@@ -185,13 +174,9 @@ int frame_equalizer_impl::general_work(int noutput_items,
             pilot_mapping[1] = -1;
         }
 
-
-        //do we have LTF2 if only one spatial stream is used ? According to p.3199, there is one LTF per STS. For the moment we concentrate on STS = 1 only.
-        
         else{
             //As from the end of LTF1 until end of DATA field, pilot mapping is {1, -1} for all even symbols and {-1, 1} for all odd symbols.
-            gr_complex first_pilot = d_current_symbol % 2 ? -1 : 1;
-
+            gr_complex first_pilot = d_current_symbol % 2 ? -1 : 1;                     
             //we mulitply the pilot values with a polarity factor as described in OFMD modulation p.3258
             gr_complex p_n = equalizer::base::POLARITY[(d_current_symbol - NUM_OFDM_SYMBOLS_IN_LTF1) % 127];
 
@@ -213,11 +198,6 @@ int frame_equalizer_impl::general_work(int noutput_items,
             pilot2_index = TRAVEL_PILOT2[m];
         }
 
-        //debug
-        //dout << "Before CSO compensation \n";
-        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
-
-
         // compensate sampling offset        
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0,
@@ -228,19 +208,10 @@ int frame_equalizer_impl::general_work(int noutput_items,
             
         }
         
-
-        //old
-        //gr_complex p = equalizer::base::POLARITY[(d_current_symbol - 2) % 127]; // why subtract 2 here? does 127 have to do with polarity? anything to do with line 141 on sync long? 
-        
-        //debug
-        //dout << "After CSO compensation \n";
-        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
-        
         /*
-        Below you compute beta according to Equation (8).
+        Below you compute beta according to Equation (8) from paper.
         */
 
-        //gr_complex beta_prev = p[0] * current_symbol[PILOT1_INDEX] * conj(d_Qi[0]) + p[1] * current_symbol[PILOT2_INDEX] * conj(d_Qi[1]);
         double beta = 0;
         if(d_current_symbol != 0){
             beta = arg( pilot_mapping[0] * current_symbol[pilot1_index] * conj(d_equalizer->get_csi_at(pilot1_index)) + 
@@ -248,55 +219,25 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         //debug
-        //dout << "Channel at i = 0 " <<  d_Qi[0] << ", at i = 1 " << d_Qi[1] << std::endl;
         //dout << "Pilot 0 is " << current_symbol[pilot1_index] / d_equalizer->get_csi_at(pilot1_index) <<", pilot 1 is " << current_symbol[pilot2_index]/ d_equalizer->get_csi_at(pilot2_index) << std::endl;
         //dout << "Polarity pilot 0 should be " << pilot_mapping[0] << " , polarity pilot 1 should be " << pilot_mapping[1] << std::endl;
         //dout << "Epsilon is " << epsilon << std::endl;
         //dout << "Beta is " << beta << std::endl;
-        //dout << "Beta prev is " << beta_prev << std::endl;
-
-        //old
-        /*
-        if (d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1) {//if we are still in LTF1
-            
-            beta = arg(- current_symbol[PILOT1_INDEX]
-                       - current_symbol[PILOT2_INDEX]);
-
-        } else {//if we are at nth symbol after LTF1
-            //use the pilots carriers corrected by polarity (supposing no travelling pilots)
-            beta = arg((current_symbol[PILOT1_INDEX] * p) + 
-                       (current_symbol[PILOT2_INDEX] * (-p) ));
-        }
-        */
 
         /*
-        Below you compute epsilon_r using Formula (10)
+        Below you compute epsilon_r using Formula (10) from paper.
         */
+
         double er = arg((conj(d_prev_pilots_with_corrected_polarity[0]) * pilot_mapping[0] * current_symbol[pilot1_index]) +
                         (conj(d_prev_pilots_with_corrected_polarity[1]) * pilot_mapping[1] * current_symbol[pilot2_index]));
 
         er *= d_bw / (2 * M_PI * d_freq * (SAMPLES_PER_OFDM_SYMBOL + SAMPLES_PER_GI));
-
-        //old
-        /*
-        if (d_current_symbol < 8) { //used to be 2. assuming 8 b/c is 4+4 (4 symbols for STF, 4 symbols for LTF1)
-            d_prev_pilots_with_corrected_polarity[0] = - current_symbol[PILOT1_INDEX];
-            d_prev_pilots_with_corrected_polarity[1] = - current_symbol[PILOT2_INDEX];
-        } else {
-            d_prev_pilots_with_corrected_polarity[0] = current_symbol[PILOT1_INDEX] * p;
-            d_prev_pilots_with_corrected_polarity[1] = current_symbol[PILOT2_INDEX] * (-p);
-        }
-        */
 
         // compensate residual frequency offset iaw Equation (9)
         for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
             current_symbol[i] *= exp(gr_complex(0, - beta));
         }
         
-        //debug
-        //dout << "Before RFO compensation \n";
-        //dout << "Expected pilots polarity : " << p[0] << ", " << p[1] << ". Effective pilots polarity : " << current_symbol[PILOT1_INDEX] << ", " << current_symbol[PILOT2_INDEX] << "\n";
-
         // update estimate of residual frequency offset using exponential moving average
         if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1) {
             double alpha = 0.1;
@@ -307,21 +248,9 @@ int frame_equalizer_impl::general_work(int noutput_items,
         d_prev_pilots_with_corrected_polarity[0] = pilot_mapping[0] * current_symbol[pilot1_index];
         d_prev_pilots_with_corrected_polarity[1] = pilot_mapping[1] * current_symbol[pilot2_index];
 
-        // do equalization. this is what sends bytes downstream to WiFi Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
-        //TODO : resolve why csi at position 1 is always close to zero
+        // do equalization. this is what sends bytes downstream to HaLow Decode MAC starting at the 0 offset relative to (out + o * CODED_BITS_PER_OFDM_SYMBOL), ending at CODED_BITS_PER_OFDM_SYMBOL offset index.
         d_equalizer->equalize(
             current_symbol, d_current_symbol, symbols, out + o * CODED_BITS_PER_OFDM_SYMBOL, pilot1_index, pilot2_index, d_frame_mod);
-
-        //old
-        /*
-        // signal field, it takes 6 OFDM symbols to make the SIG field
-        if (d_current_symbol >= 8 && d_current_symbol < 14) {
-            o++;
-        }
-        */
-
-       //debug
-       //dout << "Equalizer at position -3 + 16 for symbol " << d_current_symbol << " is " << d_equalizer->get_csi_at(-3 + 16) << std::endl;
 
         //if in SIG field
         if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
@@ -359,15 +288,13 @@ int frame_equalizer_impl::general_work(int noutput_items,
             }
         }
 
-        //if LTF2 or DATA
-        //TODO : change for LTF2
+        //if DATA
         if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD && d_sig_decode_sucess) {
-        //if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 && d_current_symbol < NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
             message_port_pub(
                 pmt::mp("symbols"),
-                pmt::cons(pmt::make_dict(), pmt::init_c32vector(CODED_BITS_PER_OFDM_SYMBOL, symbols)));
+                pmt::cons(pmt::make_dict(), pmt::init_c32vector(CODED_BITS_PER_OFDM_SYMBOL, symbols)));            
         }
 
         i++;
@@ -382,57 +309,9 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
 {
     static ofdm_param ofdm(BPSK_1_2_REP);
     static frame_param frame(ofdm);
-
-    //debug
-    /*
-    dout << "Pre deinterleaver: ";
-    for(int i = 0; i < 24; i++)
-    {
-        if (ofdm.constellation->decision_maker(&rx_symbols[i]) == 1){
-            dout << "1";
-        }
-        else if(ofdm.constellation->decision_maker(&rx_symbols[i]) == 0){
-            dout << "0";
-        }
-        else{
-            dout << "ERROR";
-        }
-    }
-    dout << std::endl;
-    */
     
     //deinterleave
     deinterleave(d_deinterleaved, rx_symbols);
-
-    //debug
-    /*
-    dout << "Post deinterleaver: ";
-    for(int i = 0; i < 24; i++)
-    {
-        if (ofdm.constellation->decision_maker(&d_deinterleaved[i]) == 1){
-            dout << "1";
-        }
-        else if(ofdm.constellation->decision_maker(&d_deinterleaved[i]) == 0){
-            dout << "0";
-        }
-        else{
-            dout << "ERROR";
-        }
-    }
-    dout << std::endl;
-    */
-
-    // 001111101001101100111110
-    //             001111101001
-    //             100001010111
-
-    // 000000110111001000111110
-    //             000000110111
-    //             100001010111
-
-    // 001010111011110001001011
-    //             001010111011
-    //             100001010111
 
     //unrepeat
     unrepeat(d_unrepeated, d_deinterleaved);
@@ -441,48 +320,6 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
     for (int i = 0; i < NUM_BITS_UNREPEATED_SIG_SYMBOL; i++){
         d_sig_field_bits[d_sig * NUM_BITS_UNREPEATED_SIG_SYMBOL + i] = ofdm.constellation->decision_maker(&d_unrepeated[i]);
     }
-    
-    /*
-    dout << "Post deinterleaved: ";
-    for(int i = 0; i < 24; i++)
-    {
-        if (d_deinterleaved[i] == 1){
-            dout << "1";
-        }
-        else if(d_deinterleaved[i] == 0){
-            dout << "0";
-        }
-        else{
-            dout << "ERROR";
-        }
-    }
-    dout << std::endl;
-    */
-
-
-
-    /*
-    if(error_in_sig){
-        dout << "ERROR detected in SIG repetition" << std::endl;
-    }
-    else{
-        dout << "SIG repetition follows pattern" << std::endl;
-    }
-    */
-
-    //add unrepeated bits into d_sig_field_bits
-    /*
-    for(int i = 0; i < NUM_BITS_UNREPEATED_SIG_SYMBOL; i++){
-        d_sig_field_bits[d_sig * NUM_BITS_UNREPEATED_SIG_SYMBOL + i] = d_frame_mod->decision_maker(&d_unrepeated[i]);
-    }
-    */
-
-    /*
-    if (d_sig_field_bits[79] == 0 && d_sig_field_bits[78] == 0 && d_sig_field_bits[77] == 0 && d_sig_field_bits[76] == 0 && d_sig_field_bits[75] == 0 &&
-    d_sig_field_bits[74] == 0 && d_sig_field_bits[73] == 0 && d_sig_field_bits[72] == 0){
-        //dout << "All 8 sig field last bits to zero !\n";
-    }
-    */
 
     //increment the sig number
     d_sig++;
@@ -490,46 +327,8 @@ bool frame_equalizer_impl::decode_signal_field(gr_complex* rx_symbols)
     //if we derepeated the whole sig field already
     if(d_sig == NUM_OFDM_SYMBOLS_IN_SIG_FIELD){
 
-        /*
-        dout << "Pre decode: ";
-        for(int i = 0; i < 80; i++)
-        {
-            if (d_sig_field_bits[i] == 1){
-                dout << "1";
-            }
-            else if(d_sig_field_bits[i] == 0){
-                dout << "0";
-            }
-            else{
-                dout << "E";
-            }
-        }
-        dout << std::endl;
-        */
-        
-
         //decode
         uint8_t* decoded_bits = d_decoder.decode(&ofdm, &frame, d_sig_field_bits);
-        
-        //debug
-        /*
-        dout << "Post decode: ";
-        for(int i = 0; i < 40; i++)
-        {
-            if (decoded_bits[i] == 1){
-                dout << "1";
-            }
-            else if(decoded_bits[i] == 0){
-                dout << "0";
-            }
-            else{
-                dout << "E";
-            }
-        }
-        dout << std::endl;
-        */
-        
-        
         
         //parse the sig field
         return parse_signal(decoded_bits);
@@ -558,33 +357,10 @@ void frame_equalizer_impl::print_coding(frame_coding coding){
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 {   
 
-    //debug
-    /*
-    dout << "Post decode: ";
-    for(int i = 0; i < 36; i++)
-    {   
-        dout << "B" << i << " : ";
-        if (decoded_bits[i] == 1){
-            dout << "1";
-        }
-        else if(decoded_bits[i] == 0){
-            dout << "0";
-        }
-        else{
-            dout << "E";
-        }
-        dout << " ,";
-    }
-    dout << std::endl;
-    */
-    
-    
-
     //number of spatial streams
     uint8_t nsts = decoded_bits[0] * 0x1 + decoded_bits[1] * 0x2 + 1;
 
     //short GI
-    //TODO : foresee in sync long short guard intervals
     bool short_gi = decoded_bits[2] == 1 ? true : false;
 
     //coding
@@ -637,27 +413,6 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     dout << "CRC-4 bit received : " << unsigned(rx_crc4) << std::endl;
     dout << "CRC-4 bit computed : " << unsigned(compute_crc(decoded_bits)) << std::endl;
 
-    //CRC-4
-
-    /*
-    dout << "Pre Formating: ";
-    for(int i = 0; i < 26; i++)
-    {   
-        //dout << "B" << i << " : ";
-        if (decoded_bits[i] == 1){
-            dout << "1";
-        }
-        else if(decoded_bits[i] == 0){
-            dout << "0";
-        }
-        else{
-            dout << "E";
-        }
-        //dout << " ,";
-    }
-    dout << std::endl;
-    */
-
     if(rx_crc4 == compute_crc(decoded_bits)){
         dout << "SIG field read with success" << std::endl;
         d_sig_decode_sucess = true;
@@ -667,127 +422,42 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 
         return false;
     }
-
-
-    /*
-    int mcs = 0;
-    int frame_bit_index = 0;
-    d_frame_bytes = 0;
-    bool parity = false;
-    std::unique_ptr<char[]> sig_field(new char[(NUM_BITS_IN_HALOW_SIG_FIELD * NUM_SIG_FIELD_REPETITIONS)/8]); //8 bits per byte
-    char byte = '\0';
-    if(decoded_bits[0])
-    {
-        byte = 1 << 7;
-    }
-    int byte_counter = 0;
-
-    //each SIG field is repeated before the next is sent. So first 6 bits should be equal to the next 6, repeated 6 times to yield 72 bits
-    for (int i = 0; i < NUM_BITS_IN_HALOW_SIG_FIELD * NUM_SIG_FIELD_REPETITIONS; i++) {
-        if(i % 8 == 0 && i != 0) //8 bits per byte
-        {
-            sig_field[byte_counter] = byte;
-            byte = '\0';
-            if(decoded_bits[i])
-            {
-                byte = 1 << 7;
-            }
-            byte_counter++;
-        }
-        else
-        {
-            if(decoded_bits[i])
-            {
-                byte = byte | (1 << (7 - (i % 8)));
-            }
-        }
-        parity ^= decoded_bits[i];
-
-        //only accounts for the first repetition
-        if ((i >= MCS_FIRST_BIT_INDEX * NUM_SIG_FIELD_REPETITIONS) && (i <= MCS_LAST_BIT_INDEX * NUM_SIG_FIELD_REPETITIONS) && decoded_bits[i]) {
-            mcs = mcs | (1 << (MCS_LAST_BIT_INDEX * NUM_SIG_FIELD_REPETITIONS - i));
-        }
-
-        // separate if statement because d_frame_bytes is int and can only store 32 bits
-        /*need to account for repetition
-        if (decoded_bits[i] && (i < MCS_FIRST_BIT_INDEX) && (i > MCS_LAST_BIT_INDEX)) {
-            d_frame_bytes = d_frame_bytes | (1 << (32 - frame_bit_index));
-            frame_bit_index++;
-        }*/
-    /*
-    }
-    sig_field[byte_counter] = byte;
-    byte_counter++;
-    byte = '\0';
-
-    //print out the hex representation of the signal field
-    for(int i = 0; i < byte_counter; i++)
-    {
-        byte = sig_field[i];
-        dout << std::hex << ((byte & 0xF0) >> 4) << " ";
-        dout << std::hex << ((byte & 0x0F)) << " ";
-    }
-    //dout << std::endl;
-
-    /* unused with HaLow, CRC instead
-    if (parity != decoded_bits[17]) {
-        dout << "SIGNAL: wrong parity" << std::endl;
-        return false;
-    }*/
     
     switch (mcs) {//table 23-41
     case 0:
         d_frame_encoding = 0;
-        //d_frame_symbols = (int)ceil((8 * d_frame_bytes + 8 + 6) / (double) 12);//see Equation 23-79
-        //d_frame_mod = d_bpsk;
         dout << "Encoding: 300 kbit/s   ";
         break;
     case 1:
         d_frame_encoding = 1;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)36);//TODO
-        //d_frame_mod = d_qpsk;
         dout << "Encoding: 600 kbit/s   ";
         break;
     case 2:
         d_frame_encoding = 2;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)48);//TODO
-        //d_frame_mod = d_qpsk;
         dout << "Encoding: 900 kbit/s   ";
         break;
     case 3:
         d_frame_encoding = 3;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)72);//TODO
-        //d_frame_mod = d_16qam;
         dout << "Encoding: 1200 kbit/s   ";
         break;
     case 4:
         d_frame_encoding = 4;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)96);//TODO
-        //d_frame_mod = d_16qam;
         dout << "Encoding: 1800 kbit/s   ";
         break;
     case 5:
         d_frame_encoding = 5;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)144);//TODO
-        //d_frame_mod = d_64qam;
         dout << "Encoding: 2400 kbit/s   ";
         break;
     case 6:
         d_frame_encoding = 6;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)192);//TODO
-        //d_frame_mod = d_64qam;
         dout << "Encoding: 2700 kbit/s   ";
         break;
     case 7:
         d_frame_encoding = 7;
-        //d_frame_symbols = (int)ceil((16 + 8 * d_frame_bytes + 6) / (double)216);//TODO
-        //d_frame_mod = d_64qam;
         dout << "Encoding: 3000 kbit/s   ";
         break;
     case 10:
         d_frame_encoding = 10;
-        //d_frame_symbols = (int)ceil((8 * d_frame_bytes + 8 + 6) / (double) 6);//see Equation 23-79
-        //d_frame_mod = d_bpsk;
         dout << "Encoding: 150 kbit/s   ";
         break;
     default:
