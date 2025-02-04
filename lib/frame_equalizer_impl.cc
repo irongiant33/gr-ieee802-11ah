@@ -143,7 +143,6 @@ int frame_equalizer_impl::general_work(int noutput_items,
             d_current_symbol = 0;
             d_frame_symbols = 0;
             d_sig = 0;
-            d_sig_decode_sucess = false;
             d_travel_pilots = false;
             d_frame_mod = d_bpsk;
 
@@ -155,14 +154,12 @@ int frame_equalizer_impl::general_work(int noutput_items,
             dout << "epsilon: " << d_epsilon0 << std::endl;
         }
 
-        // not interesting -> skip. Why is this not interesting? uncommenting for now because I think it terminates too early for HaLow
-        //TODO adapt this for halow
-        /*
-        if (d_current_symbol > (d_frame_symbols + 2)) {
+        // if we reached the end of the frame, drop remaining samples
+        if (d_current_symbol > (d_frame_symbols + NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD)) {
             i++;
             continue;
         }
-        */
+        
 
         std::memcpy(current_symbol, in + i * SAMPLES_PER_OFDM_SYMBOL, SAMPLES_PER_OFDM_SYMBOL * sizeof(gr_complex));
 
@@ -289,7 +286,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         }
 
         //if DATA
-        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD && d_sig_decode_sucess) {
+        if (d_current_symbol >= NUM_OFDM_SYMBOLS_IN_LTF1 + NUM_OFDM_SYMBOLS_IN_SIG_FIELD) {
             o++;
             pmt::pmt_t pdu = pmt::make_dict();
             message_port_pub(
@@ -355,7 +352,7 @@ void frame_equalizer_impl::print_coding(frame_coding coding){
 
 
 bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
-{   
+{    
 
     //number of spatial streams
     uint8_t nsts = decoded_bits[0] * 0x1 + decoded_bits[1] * 0x2 + 1;
@@ -415,49 +412,48 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
 
     if(rx_crc4 == compute_crc(decoded_bits)){
         dout << "SIG field read with success" << std::endl;
-        d_sig_decode_sucess = true;
     }
     else{
         dout << "ERROR while reading SIG field : bad crc" << std::endl;
 
         return false;
     }
+
+    //compute frame symbols, encoding and bytes members
+    ofdm_param ofdm((gr::ieee802_11::Encoding) mcs);
+    frame_param frame(ofdm, (int)length);
+
+    d_frame_symbols = frame.n_sym;
+    d_frame_encoding = (int) mcs;
+    d_frame_bytes = (int)length;
+
     
     switch (mcs) {//table 23-41
     case 0:
-        d_frame_encoding = 0;
         dout << "Encoding: 300 kbit/s   ";
         break;
     case 1:
-        d_frame_encoding = 1;
         dout << "Encoding: 600 kbit/s   ";
         break;
     case 2:
-        d_frame_encoding = 2;
         dout << "Encoding: 900 kbit/s   ";
         break;
     case 3:
-        d_frame_encoding = 3;
         dout << "Encoding: 1200 kbit/s   ";
         break;
     case 4:
-        d_frame_encoding = 4;
         dout << "Encoding: 1800 kbit/s   ";
         break;
     case 5:
-        d_frame_encoding = 5;
         dout << "Encoding: 2400 kbit/s   ";
         break;
     case 6:
-        d_frame_encoding = 6;
         dout << "Encoding: 2700 kbit/s   ";
         break;
     case 7:
-        d_frame_encoding = 7;
         dout << "Encoding: 3000 kbit/s   ";
         break;
     case 10:
-        d_frame_encoding = 10;
         dout << "Encoding: 150 kbit/s   ";
         break;
     default:
