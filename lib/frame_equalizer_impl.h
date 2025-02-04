@@ -52,10 +52,6 @@ private:
     bool parse_signal(uint8_t* signal);
     bool decode_signal_field(gr_complex* rx_bits);
     void print_coding(frame_coding coding);
-    //void deinterleave(gr_complex* rx_symbols);
-    //void unrepeat(gr_complex* rx_symbols);
-    //uint8_t compute_crc(uint8_t* crc_input);
-    //uint8_t crc4HaLoW_byte(uint8_t crc, void const *mem, size_t len);
 
     equalizer::base* d_equalizer;
     gr::thread::mutex d_mutex;
@@ -64,13 +60,8 @@ private:
     bool d_log;
     int d_current_symbol;
     int d_sig;//the current sig field number
-    bool d_sig_decode_sucess;
     uint8_t d_sig_field_bits[200] = {0};//the bits contained in the sig field before decoding
     uint8_t d_crc4_input_bytes[4];//the input bytes to the crc computer
-    /*
-    80 should be enough. However, the viterbi algorithm needs to be able to read further than 80 (because of the traceback). For the sig field it has to access up until index 152). If value at index > 80 is !=0
-    then the whole decoding breaks and leads to different decoded values at each run.
-    */
     viterbi_decoder d_decoder;
 
     // freq offset
