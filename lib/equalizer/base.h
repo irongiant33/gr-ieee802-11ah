@@ -33,18 +33,23 @@ public:
     virtual void equalize(gr_complex* in,
                           int n,
                           gr_complex* symbols,
-                          uint8_t* bits,
+                          gr_complex* bits,
+                          uint8_t pilot1_index,
+                          uint8_t pilot2_index,
                           std::shared_ptr<gr::digital::constellation> mod) = 0;
+
     virtual double get_snr() = 0;
 
     static const gr_complex POLARITY[127];
 
     std::vector<gr_complex> get_csi();
 
+    gr_complex get_csi_at(int subcarrier_index);
+
 protected:
     static const gr_complex LONG[SAMPLES_PER_OFDM_SYMBOL];
 
-    gr_complex d_H[SAMPLES_PER_OFDM_SYMBOL];
+    gr_complex d_H[SAMPLES_PER_OFDM_SYMBOL] = {gr_complex(0, 0)};
 };
 
 } // namespace equalizer
