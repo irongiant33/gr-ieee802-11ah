@@ -21,10 +21,9 @@
 
 using namespace gr::ieee802_11::equalizer;
 
-const gr_complex base::LONG[] = {  0,  0,  0,  1,  1, -1, -1,  1,  1, -1,
-                                   1, -1,  1,  1,  1,  1,  0,  1, -1, -1, //make sure 0 is in center
-                                   1, -1,  1,  1,  1,  1,  1,  1, -1, -1,
-                                   0,  0};//maybe this is the first 48 (24 in the case of HaLow) values from the polarity field below, after the SIG
+const gr_complex base::LONG[] = { 0,  0,  0,  1, -1,  1, -1, -1,  1, -1, 1, 1, -1, 1, 1, 1, 0, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0};
+    //old (and incorrect) 
+    //0,  0,  0,  1,  1, -1, -1,  1,  1, -1, 1, -1,  1,  1,  1,  1,  0,  1, -1, -1, 1, -1,  1,  1,  1,  1,  1,  1, -1, -1, 0,  0};//maybe this is the first 48 (24 in the case of HaLow) values from the polarity field below, after the SIG
 
 const gr_complex base::POLARITY[127] = {
     1,  1,  1,  1,  -1, -1, -1, 1,  -1, -1, -1, -1, 1,  1,  -1, 1,  -1, -1, 1, 1,  -1, 1,
@@ -35,15 +34,34 @@ const gr_complex base::POLARITY[127] = {
     1,  -1, -1, 1,  -1, -1, -1, 1,  1,  1,  -1, -1, -1, -1, -1, -1, -1
 }; //original from p.2826
 
+/*
+    1,  1,  1,  1,  -1, -1, -1, 1,  -1, -1, -1, -1, 1,  1,  -1, 1,  -1, -1, 1, 1,  -1, 1,
+    1,  -1, 1,  1,  1,  1,  1,  1,  -1, 1,  1,  1,  -1, 1,  1,  -1, -1, 1,  1, 1,  -1, 1,
+    -1, -1, -1, 1,  -1, 1,  -1, -1, 1,  -1, -1, 1,  1,  1,  1,  1,  -1, -1, 1, 1,  -1, -1,
+    1,  -1, 1,  -1, 1,  1,  -1, -1, -1, 1,  1,  -1, -1, -1, -1, 1,  -1, -1, 1, -1, 1,  1,
+    1,  1,  -1, 1,  -1, 1,  -1, 1,  -1, -1, -1, -1, -1, 1,  -1, 1,  1,  -1, 1, -1, 1,  1,
+    1,  -1, -1, 1,  -1, -1, -1, 1,  1,  1,  -1, -1, -1, -1, -1, -1, -1
+*/  //sequence I copied (trusted) and is the same as above ==> no errors
+
 std::vector<gr_complex> base::get_csi()
 {
     std::vector<gr_complex> csi;
-    csi.reserve(52);
-    for (int i = 0; i < 64; i++) {
-        if ((i == 32) || (i < 6) || (i > 58)) {
+    csi.reserve(26);
+    for (int i = 0; i < SAMPLES_PER_OFDM_SYMBOL; i++) {
+        if ((i == 16) || (i < 3) || (i > 29)) {
             continue;
         }
         csi.push_back(d_H[i]);
     }
     return csi;
+}
+
+gr_complex base::get_csi_at(int subcarrier_index)
+{
+    if ((subcarrier_index == 16) || (subcarrier_index < 3) || (subcarrier_index > 29)) {
+        return gr_complex(0,0);
+    }
+    else{
+        return d_H[subcarrier_index];
+    }
 }
