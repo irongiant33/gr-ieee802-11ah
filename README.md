@@ -1,6 +1,6 @@
 Hi!
 
-This an IEEE 802.11 a/g/p transceiver for GNU Radio that is fitted for operation
+This an IEEE 802.11 a/g/p/ah transceiver for GNU Radio that is fitted for operation
 with Ettus N210s and B210s. Interoperability was tested with many off-the-shelf
 WiFi cards and IEEE 802.11p prototypes. The code can also be used in
 simulations.
@@ -69,7 +69,10 @@ To actually install the blocks do
     sudo make install
     sudo ldconfig
 
+Alternatively, you can run `build_and_install.sh`
+
 ### Adjust Maximum Shared Memory
+
 Since the transmitter is using the Tagged Stream blocks it has to store a
 complete frame in the buffer before processing it. The default maximum shared
 memory might not be enough on most Linux systems. It can be increased with
