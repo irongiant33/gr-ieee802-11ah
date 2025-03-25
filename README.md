@@ -56,23 +56,23 @@ installed with the typical command sequence:
     sudo ldconfig
 
 
-## Installation of the gr-ieee802-11-ah branch
+## Installation of the maint-3.10-802-11-ah branch
 
-First, clone the repository and switch to the gr-ieee802-11-ah branch
+First, clone the repository and switch to the maint-3.10-802-11-ah branch
 
 ```
 git clone https://github.com/bastibl/gr-ieee802-11
 cd gr-ieee802-11
-git checkout gr-ieee802-11-ah
+git checkout maint-3.10-802-11-ah
 ```
 
-Then, proceed with the installation of the the gr-ieee802-11-ah branch by running the ``build_and_install.sh`` script :
+Then, proceed with the installation of the the maint-3.10-802-11-ah branch by running the ``build_and_install.sh`` script :
 
 ```
 build_and_install.sh
 ```
 
-This script will make sure to uninstall any previous instance of gr-ieee802-11. It will also check for previous installation artifacts on your computer that may interfere with the proper working of gr-ieee802-11-ah.
+This script will make sure to uninstall any previous instance of gr-ieee802-11. It will also check for previous installation artifacts on your computer that may interfere with the proper working of maint-3.10-802-11-ah.
 
 
 ### Adjust Maximum Shared Memory
@@ -132,12 +132,12 @@ If you want to switch back to the gr-ieee802-11 branch, we recommend you to run 
 ./clean_and_uninstall.sh
 ```
 
-This script will make sure to uninstall gr-ieee802-11-ah properely so you can start with a fresh setup for the installation of gr-ieee802-11.
+This script will make sure to uninstall maint-3.10-802-11-ah properely so you can start with a fresh setup for the installation of gr-ieee802-11.
 
 After, switch back to the gr-ieee802-11 branch :
 
 ```
-git checkout gr-ieee802-11-ah
+git checkout maint-3.10-802-11-ah
 ```
 
 From there, follow the installation guidelines of the README.
