@@ -133,7 +133,7 @@ public:
                 if (!rel) {
                     add_item_tag(0,
                                  nitems_written(0),
-                                 pmt::string_to_symbol("wifi_start"),
+                                 pmt::string_to_symbol("halow_start"),
                                  pmt::from_double(d_freq_offset_short - d_freq_offset),
                                  pmt::string_to_symbol(name()));
                 }

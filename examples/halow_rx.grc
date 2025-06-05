@@ -384,7 +384,7 @@ blocks:
     alias: ''
     append: 'True'
     comment: ''
-    file: /tmp/wifi.pcap
+    file: /tmp/halow.pcap
     type: byte
     unbuffered: 'True'
     vlen: '1'

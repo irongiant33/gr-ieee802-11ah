@@ -265,7 +265,7 @@ blocks:
     alias: ''
     append: 'True'
     comment: ''
-    file: /tmp/wifi.pcap
+    file: /tmp/halow.pcap
     type: byte
     unbuffered: 'True'
     vlen: '1'
@@ -1253,7 +1253,7 @@ connections:
 - [halow_phy_hier_0, mac_out, ieee802_11ah_mac_0, phy in]
 - [halow_phy_hier_0, mac_out, ieee802_11ah_parse_mac_0, in]
 - [ieee802_11ah_ether_encap_0, to tap, network_tuntap_pdu_0, pdus]
-- [ieee802_11ah_ether_encap_0, to wifi, ieee802_11ah_mac_0, app in]
+- [ieee802_11ah_ether_encap_0, to halow, ieee802_11ah_mac_0, app in]
 - [ieee802_11ah_mac_0, phy out, halow_phy_hier_0, mac_in]
 - [network_tuntap_pdu_0, pdus, ieee802_11ah_ether_encap_0, from tap]
 - [pdu_pdu_to_tagged_stream_0, '0', qtgui_const_sink_x_0, '0']

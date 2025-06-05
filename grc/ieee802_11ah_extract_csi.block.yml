@@ -1,5 +1,5 @@
 id: ieee802_11ah_extract_csi
-label: WiFi Extract CSI
+label: HaLoW Extract CSI
 category: '[IEEE802.11AH]'
 
 templates:

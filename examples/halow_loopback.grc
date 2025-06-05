@@ -318,7 +318,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /tmp/wifi.bin
+    file: /tmp/halow.bin
     type: byte
     unbuffered: 'True'
     vlen: '1'

@@ -38,7 +38,7 @@ public:
 
 private:
     void from_tap(pmt::pmt_t msg);
-    void from_wifi(pmt::pmt_t msg);
+    void from_halow(pmt::pmt_t msg);
 
     bool d_debug;
     uint16_t d_last_seq;

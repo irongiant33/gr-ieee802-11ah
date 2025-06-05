@@ -136,7 +136,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         
         dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
 
-        get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_start"));
+        get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("halow_start"));
 
         // new frame
         if (tags.size()) {

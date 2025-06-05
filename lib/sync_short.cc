@@ -140,7 +140,7 @@ public:
     {
         mylog("frame start at in: {} out: {}", item, input_item);
 
-        const pmt::pmt_t key = pmt::string_to_symbol("wifi_start");
+        const pmt::pmt_t key = pmt::string_to_symbol("halow_start");
         const pmt::pmt_t value = pmt::from_double(freq_offset);
         const pmt::pmt_t srcid = pmt::string_to_symbol(name());
         add_item_tag(0, item, key, value, srcid);
