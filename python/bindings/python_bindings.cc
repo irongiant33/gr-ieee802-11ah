@@ -46,7 +46,7 @@ void* init_numpy()
     return NULL;
 }
 
-PYBIND11_MODULE(ieee802_11_python, m)
+PYBIND11_MODULE(ieee802_11ah_python, m)
 {
     // Initialize the numpy C API
     // (otherwise we will see segmentation faults)

@@ -2,7 +2,7 @@
 
 id: ieee802_11ah_decode_mac
 label: HaLoW Decode MAC
-category: '[IEEE802.11]'
+category: '[IEEE802.11AH]'
 
 parameters:
 -   id: log

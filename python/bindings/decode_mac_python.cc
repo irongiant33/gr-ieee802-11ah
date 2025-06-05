@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(decode_mac.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(cace2c32f544fb653ce489c979eb4082)                     */
+/* BINDTOOL_HEADER_FILE_HASH(00e0c38358405205f7428ceb10dbbc36)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/decode_mac.h>
+#include <ieee802_11ah/decode_mac.h>
 // pydoc.h is automatically generated in the build directory
 #include <decode_mac_pydoc.h>
 
 void bind_decode_mac(py::module& m)
 {
 
-    using decode_mac    = ::gr::ieee802_11::decode_mac;
+    using decode_mac    = ::gr::ieee802_11ah::decode_mac;
 
 
     py::class_<decode_mac, gr::block, gr::basic_block,
