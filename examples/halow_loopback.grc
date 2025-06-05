@@ -318,7 +318,7 @@ blocks:
     alias: ''
     append: 'False'
     comment: ''
-    file: /tmp/wifi.bin
+    file: /tmp/halow.bin
     type: byte
     unbuffered: 'True'
     vlen: '1'
@@ -498,9 +498,9 @@ blocks:
     affinity: ''
     alias: ''
     bandwidth: 1e6
-    chan_est: ieee802_11.LS
+    chan_est: ieee802_11ah.LS
     comment: ''
-    encoding: ieee802_11.BPSK_1_2
+    encoding: ieee802_11ah.BPSK_1_2
     frequency: 863.5e6
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -512,8 +512,8 @@ blocks:
     coordinate: [752, 364.0]
     rotation: 180
     state: enabled
-- name: ieee802_11_extract_csi_0
-  id: ieee802_11_extract_csi
+- name: ieee802_11ah_extract_csi_0
+  id: ieee802_11ah_extract_csi
   parameters:
     affinity: ''
     alias: ''
@@ -527,8 +527,8 @@ blocks:
     coordinate: [160, 608.0]
     rotation: 180
     state: disabled
-- name: ieee802_11_mac_0
-  id: ieee802_11_mac
+- name: ieee802_11ah_mac_0
+  id: ieee802_11ah_mac
   parameters:
     affinity: ''
     alias: ''
@@ -545,8 +545,8 @@ blocks:
     coordinate: [704, 188.0]
     rotation: 0
     state: enabled
-- name: ieee802_11_parse_mac_0
-  id: ieee802_11_parse_mac
+- name: ieee802_11ah_parse_mac_0
+  id: ieee802_11ah_parse_mac
   parameters:
     affinity: ''
     alias: ''
@@ -792,7 +792,7 @@ blocks:
 
 connections:
 - [blocks_complex_to_mag_0, '0', blocks_vector_to_stream_0, '0']
-- [blocks_message_strobe_0, strobe, ieee802_11_mac_0, app in]
+- [blocks_message_strobe_0, strobe, ieee802_11ah_mac_0, app in]
 - [blocks_multiply_const_xx_0, '0', channels_channel_model_0, '0']
 - [blocks_vector_to_stream_0, '0', qtgui_time_sink_x_0, '0']
 - [channels_channel_model_0, '0', pfb_arb_resampler_xxx_0, '0']
@@ -800,11 +800,11 @@ connections:
 - [foo_wireshark_connector_0, '0', blocks_file_sink_0, '0']
 - [halow_phy_hier_0, '0', foo_packet_pad2_0, '0']
 - [halow_phy_hier_0, carrier, pdu_pdu_to_tagged_stream_0, pdus]
-- [halow_phy_hier_0, mac_out, ieee802_11_parse_mac_0, in]
-- [ieee802_11_extract_csi_0, '0', blocks_complex_to_mag_0, '0']
-- [ieee802_11_extract_csi_0, '0', blocks_tag_debug_0, '0']
-- [ieee802_11_mac_0, phy out, halow_phy_hier_0, mac_in]
-- [ieee802_11_parse_mac_0, out, ieee802_11_extract_csi_0, pdu in]
+- [halow_phy_hier_0, mac_out, ieee802_11ah_parse_mac_0, in]
+- [ieee802_11ah_extract_csi_0, '0', blocks_complex_to_mag_0, '0']
+- [ieee802_11ah_extract_csi_0, '0', blocks_tag_debug_0, '0']
+- [ieee802_11ah_mac_0, phy out, halow_phy_hier_0, mac_in]
+- [ieee802_11ah_parse_mac_0, out, ieee802_11ah_extract_csi_0, pdu in]
 - [pdu_pdu_to_tagged_stream_0, '0', qtgui_const_sink_x_0, '0']
 - [pfb_arb_resampler_xxx_0, '0', halow_phy_hier_0, '0']
 

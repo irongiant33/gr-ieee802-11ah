@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(frame_equalizer.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(16ff5ed7a4d765b220d8e93bba89c627)                     */
+/* BINDTOOL_HEADER_FILE_HASH(7d3c6ebe51aea88195c33f547cfc7277)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/frame_equalizer.h>
+#include <ieee802_11ah/frame_equalizer.h>
 // pydoc.h is automatically generated in the build directory
 #include <frame_equalizer_pydoc.h>
 
 void bind_frame_equalizer(py::module& m)
 {
 
-    using frame_equalizer    = ::gr::ieee802_11::frame_equalizer;
+    using frame_equalizer    = ::gr::ieee802_11ah::frame_equalizer;
 
 
     py::class_<frame_equalizer, gr::block, gr::basic_block,
@@ -71,15 +71,15 @@ void bind_frame_equalizer(py::module& m)
 
         ;
 
-    py::enum_<::gr::ieee802_11::Equalizer>(m,"Equalizer")
-        .value("LS", ::gr::ieee802_11::LS) // 0
-        .value("LMS", ::gr::ieee802_11::LMS) // 1
-        .value("COMB", ::gr::ieee802_11::COMB) // 2
-        .value("STA", ::gr::ieee802_11::STA) // 3
+    py::enum_<::gr::ieee802_11ah::Equalizer>(m,"Equalizer")
+        .value("LS", ::gr::ieee802_11ah::LS) // 0
+        .value("LMS", ::gr::ieee802_11ah::LMS) // 1
+        .value("COMB", ::gr::ieee802_11ah::COMB) // 2
+        .value("STA", ::gr::ieee802_11ah::STA) // 3
         .export_values()
     ;
 
-    py::implicitly_convertible<int, ::gr::ieee802_11::Equalizer>();
+    py::implicitly_convertible<int, ::gr::ieee802_11ah::Equalizer>();
 
 
 

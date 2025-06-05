@@ -16,9 +16,9 @@
  */
 #include "utils.h"
 #include <gnuradio/io_signature.h>
-#include <ieee802_11/mapper.h>
+#include <ieee802_11ah/mapper.h>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 
 class mapper_impl : public mapper
@@ -100,7 +100,7 @@ public:
                 char* interleaved_data;
                 char* symbols;
 
-                if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                if(d_ofdm.encoding == gr::ieee802_11ah::BPSK_1_2_REP){
                     repeated_data = (char*)calloc(frame.n_encoded_bits * 2, sizeof(char));
                     interleaved_data = (char*)calloc(frame.n_encoded_bits * 2, sizeof(char));
                     symbols = (char*)calloc((frame.n_encoded_bits / d_ofdm.n_bpsc) * 2, sizeof(char));
@@ -127,7 +127,7 @@ public:
                 // puncturing
                 puncturing(encoded_data, punctured_data, frame, d_ofdm);
                 // repeate (only if necessary - MCS 10) and interleave
-                if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                if(d_ofdm.encoding == gr::ieee802_11ah::BPSK_1_2_REP){
                     repeat(punctured_data, repeated_data, frame, d_ofdm);
                     interleave(repeated_data, interleaved_data, frame, d_ofdm);
                 }
@@ -162,7 +162,7 @@ public:
                 free(scrambled_data);
                 free(encoded_data);
                 free(punctured_data);
-                if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                if(d_ofdm.encoding == gr::ieee802_11ah::BPSK_1_2_REP){
                     free(repeated_data);
                 }
                 free(interleaved_data);

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(chunks_to_symbols.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(3d2f4de89018fc7c7ee96d450ca48179)                     */
+/* BINDTOOL_HEADER_FILE_HASH(4d241e4fb5ec2425b1f2978c6be8dc3e)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/chunks_to_symbols.h>
+#include <ieee802_11ah/chunks_to_symbols.h>
 // pydoc.h is automatically generated in the build directory
 #include <chunks_to_symbols_pydoc.h>
 
 void bind_chunks_to_symbols(py::module& m)
 {
 
-    using chunks_to_symbols    = ::gr::ieee802_11::chunks_to_symbols;
+    using chunks_to_symbols    = ::gr::ieee802_11ah::chunks_to_symbols;
 
 
     py::class_<chunks_to_symbols, gr::tagged_stream_block, gr::block, gr::basic_block,

@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_VITERBI_DECODER_BASE_H
-#define INCLUDED_IEEE802_11_VITERBI_DECODER_BASE_H
+#ifndef INCLUDED_IEEE802_11AH_VITERBI_DECODER_BASE_H
+#define INCLUDED_IEEE802_11AH_VITERBI_DECODER_BASE_H
 
 #include "../utils.h"
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 // Maximum number of traceback bytes
 #define TRACEBACK_MAX 24
@@ -63,7 +63,7 @@ protected:
     uint8_t* depuncture(uint8_t* in);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_VITERBI_DECODER_BASE_H */
+#endif /* INCLUDED_IEEE802_11AH_VITERBI_DECODER_BASE_H */

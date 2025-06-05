@@ -18,13 +18,13 @@
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/filter/fir_filter.h>
 #include <gnuradio/io_signature.h>
-#include <ieee802_11/sync_long.h>
+#include <ieee802_11ah/sync_long.h>
 #include <volk/volk.h>
 
 #include <list>
 #include <tuple>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 using namespace std;
 
 
@@ -133,7 +133,7 @@ public:
                 if (!rel) {
                     add_item_tag(0,
                                  nitems_written(0),
-                                 pmt::string_to_symbol("wifi_start"),
+                                 pmt::string_to_symbol("halow_start"),
                                  pmt::from_double(d_freq_offset_short - d_freq_offset),
                                  pmt::string_to_symbol(name()));
                 }

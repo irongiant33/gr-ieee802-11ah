@@ -2,7 +2,7 @@ options:
   parameters:
     author: ''
     catch_exceptions: 'True'
-    category: '[IEEE802.11]'
+    category: '[IEEE802.11AH]'
     cmake_opt: ''
     comment: ''
     copyright: ''
@@ -49,7 +49,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: ieee802_11.signal_field()
+    value: ieee802_11ah.signal_field()
   states:
     bus_sink: false
     bus_source: false
@@ -469,7 +469,7 @@ blocks:
     label: ''
     short_id: ''
     type: ''
-    value: ieee802_11.LS
+    value: ieee802_11ah.LS
   states:
     bus_sink: false
     bus_source: false
@@ -565,7 +565,7 @@ blocks:
     label: ''
     short_id: ''
     type: ''
-    value: ieee802_11.BPSK_1_2
+    value: ieee802_11ah.BPSK_1_2
   states:
     bus_sink: false
     bus_source: false
@@ -632,8 +632,8 @@ blocks:
     coordinate: [760, 12.0]
     rotation: 0
     state: enabled
-- name: ieee802_11_chunks_to_symbols_xx_0
-  id: ieee802_11_chunks_to_symbols_xx
+- name: ieee802_11ah_chunks_to_symbols_xx_0
+  id: ieee802_11ah_chunks_to_symbols_xx
   parameters:
     affinity: ''
     alias: ''
@@ -647,8 +647,8 @@ blocks:
     coordinate: [496, 288]
     rotation: 0
     state: enabled
-- name: ieee802_11_decode_mac_0
-  id: ieee802_11_decode_mac
+- name: ieee802_11ah_decode_mac_0
+  id: ieee802_11ah_decode_mac
   parameters:
     affinity: ''
     alias: ''
@@ -664,8 +664,8 @@ blocks:
     coordinate: [528, 900.0]
     rotation: 180
     state: enabled
-- name: ieee802_11_frame_equalizer_0
-  id: ieee802_11_frame_equalizer
+- name: ieee802_11ah_frame_equalizer_0
+  id: ieee802_11ah_frame_equalizer
   parameters:
     affinity: ''
     algo: chan_est
@@ -684,8 +684,8 @@ blocks:
     coordinate: [776, 888]
     rotation: 180
     state: enabled
-- name: ieee802_11_mapper_0
-  id: ieee802_11_mapper
+- name: ieee802_11ah_mapper_0
+  id: ieee802_11ah_mapper
   parameters:
     affinity: ''
     alias: ''
@@ -813,7 +813,7 @@ blocks:
     rotation: 0
     state: enabled
 - name: sync_long
-  id: ieee802_11_sync_long
+  id: ieee802_11ah_sync_long
   parameters:
     affinity: ''
     alias: ''
@@ -831,7 +831,7 @@ blocks:
     rotation: 0
     state: enabled
 - name: sync_short
-  id: ieee802_11_sync_short
+  id: ieee802_11ah_sync_short
   parameters:
     affinity: ''
     alias: ''
@@ -869,18 +869,18 @@ connections:
 - [digital_ofdm_cyclic_prefixer_0_0, '0', pad_sink_0, '0']
 - [digital_packet_headergenerator_bb_0, '0', digital_chunks_to_symbols_xx_0, '0']
 - [fft_vxx_0_0, '0', digital_ofdm_cyclic_prefixer_0_0, '0']
-- [fft_vxx_0_1, '0', ieee802_11_frame_equalizer_0, '0']
-- [ieee802_11_chunks_to_symbols_xx_0, '0', blocks_file_sink_0, '0']
-- [ieee802_11_chunks_to_symbols_xx_0, '0', blocks_tagged_stream_mux_0, '1']
-- [ieee802_11_decode_mac_0, out, pad_sink_2, in]
-- [ieee802_11_frame_equalizer_0, '0', ieee802_11_decode_mac_0, '0']
-- [ieee802_11_frame_equalizer_0, symbols, pad_sink_1, in]
-- [ieee802_11_mapper_0, '0', digital_packet_headergenerator_bb_0, '0']
-- [ieee802_11_mapper_0, '0', ieee802_11_chunks_to_symbols_xx_0, '0']
+- [fft_vxx_0_1, '0', ieee802_11ah_frame_equalizer_0, '0']
+- [ieee802_11ah_chunks_to_symbols_xx_0, '0', blocks_file_sink_0, '0']
+- [ieee802_11ah_chunks_to_symbols_xx_0, '0', blocks_tagged_stream_mux_0, '1']
+- [ieee802_11ah_decode_mac_0, out, pad_sink_2, in]
+- [ieee802_11ah_frame_equalizer_0, '0', ieee802_11ah_decode_mac_0, '0']
+- [ieee802_11ah_frame_equalizer_0, symbols, pad_sink_1, in]
+- [ieee802_11ah_mapper_0, '0', digital_packet_headergenerator_bb_0, '0']
+- [ieee802_11ah_mapper_0, '0', ieee802_11ah_chunks_to_symbols_xx_0, '0']
 - [pad_source_0, '0', blocks_complex_to_mag_squared_0, '0']
 - [pad_source_0, '0', blocks_delay_0_0, '0']
 - [pad_source_0, '0', blocks_multiply_xx_0, '0']
-- [pad_source_1, out, ieee802_11_mapper_0, in]
+- [pad_source_1, out, ieee802_11ah_mapper_0, in]
 - [sync_long, '0', blocks_stream_to_vector_0, '0']
 - [sync_short, '0', blocks_delay_0, '0']
 - [sync_short, '0', sync_long, '0']

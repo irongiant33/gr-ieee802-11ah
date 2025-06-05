@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_VITERBI_DECODER_GENERIC_H
-#define INCLUDED_IEEE802_11_VITERBI_DECODER_GENERIC_H
+#ifndef INCLUDED_IEEE802_11AH_VITERBI_DECODER_GENERIC_H
+#define INCLUDED_IEEE802_11AH_VITERBI_DECODER_GENERIC_H
 
 #include "base.h"
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 /* This Viterbi decoder was taken from the gr-dvbt module of
  * GNU Radio. It is an SSE2 version of the Viterbi Decoder
@@ -56,7 +56,7 @@ private:
                                              unsigned char* outbuf);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_VITERBI_DECODER_GENERIC_H */
+#endif /* INCLUDED_IEEE802_11AH_VITERBI_DECODER_GENERIC_H */

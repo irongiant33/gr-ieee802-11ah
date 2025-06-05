@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013, 2016 Bastian Bloessl <bloessl@ccs-labs.org>
+ * Copyright (C) 2013 Bastian Bloessl <bloessl@ccs-labs.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,28 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_H
+#define INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_H
 
-#ifndef INCLUDED_IEEE802_11_SIGNAL_FIELD_H
-#define INCLUDED_IEEE802_11_SIGNAL_FIELD_H
-
-#include <gnuradio/digital/packet_header_default.h>
-#include <ieee802_11/api.h>
-#include <memory>
+#include <gnuradio/tagged_stream_block.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API signal_field : virtual public digital::packet_header_default
+class IEEE802_11AH_API chunks_to_symbols : virtual public tagged_stream_block
 {
 public:
-    typedef std::shared_ptr<signal_field> sptr;
+    typedef std::shared_ptr<chunks_to_symbols> sptr;
     static sptr make();
-
-protected:
-    signal_field();
 };
 
-} // namespace ieee802_11
-} // namespace gr
+} /* namespace ieee802_11ah */
+} /* namespace gr */
 
-#endif /* INCLUDED_IEEE802_11_SIGNAL_FIELD_H */
+#endif /* INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_H */

@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_UTILS_H
-#define INCLUDED_IEEE802_11_UTILS_H
+#ifndef INCLUDED_IEEE802_11AH_UTILS_H
+#define INCLUDED_IEEE802_11AH_UTILS_H
 
 #include <gnuradio/config.h>
-#include <ieee802_11/api.h>
-#include <ieee802_11/mapper.h>
-#include <ieee802_11/constellations.h>
+#include <ieee802_11ah/api.h>
+#include <ieee802_11ah/mapper.h>
+#include <ieee802_11ah/constellations.h>
 #include <cinttypes>
 #include <iostream>
 
-using gr::ieee802_11::Encoding;
+using gr::ieee802_11ah::Encoding;
 
 #define SAMPLES_PER_OFDM_SYMBOL 32 //there are 32 HaLow subcarriers
 #define CODED_BITS_PER_OFDM_SYMBOL 24 // there are 26 effective HaLow subcarriers. 2 are pilots, bringing the number of data subcarriers to 24 
@@ -340,4 +340,4 @@ static uint8_t const table_word[][256] = {
     0x50, 0xa0, 0xb0, 0x80, 0x90, 0xe0, 0xf0, 0xc0, 0xd0}
 };
 
-#endif /* INCLUDED_IEEE802_11_UTILS_H */
+#endif /* INCLUDED_IEEE802_11AH_UTILS_H */

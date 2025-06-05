@@ -7,15 +7,15 @@
 # The presence of this file turns this directory into a Python package
 
 '''
-This is the GNU Radio IEEE802_11 module. Place your Python package
+This is the GNU Radio IEEE802_11AH module. Place your Python package
 description here (python/__init__.py).
 '''
 import os
 
-# import pybind11 generated symbols into the ieee802_11 namespace
+# import pybind11 generated symbols into the ieee802_11ah namespace
 try:
     # this might fail if the module is python-only
-    from .ieee802_11_python import *
+    from .ieee802_11ah_python import *
 except ModuleNotFoundError:
     pass
 

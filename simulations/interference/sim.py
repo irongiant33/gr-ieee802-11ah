@@ -22,7 +22,7 @@ from gnuradio.filter import firdes
 from gnuradio.filter import pfb
 from wifi_phy_hier import wifi_phy_hier  # grc-generated hier_block
 import foo
-import ieee802_11
+import ieee802_11ah
 import math
 import pmt
 import random
@@ -59,14 +59,14 @@ class sim(gr.top_block):
         ##################################################
         self.wifi_phy_hier_0_0 = wifi_phy_hier(
             bandwidth=10e6,
-            chan_est=ieee802_11.LS,
+            chan_est=ieee802_11ah.LS,
             encoding=encoding,
             frequency=5.89e9,
             sensitivity=0.56,
         )
         self.wifi_phy_hier_0 = wifi_phy_hier(
             bandwidth=10e6,
-            chan_est=ieee802_11.LS,
+            chan_est=ieee802_11ah.LS,
             encoding=encoding,
             frequency=5.89e9,
             sensitivity=0.56,
@@ -83,18 +83,18 @@ class sim(gr.top_block):
         	  flt_size=32)
         self.pfb_arb_resampler_xxx_0.declare_sample_delay(0)
 
-        self.ieee802_11_mac_0_0 = ieee802_11.mac(([0x12, 0x12, 0x12, 0x12, 0x12, 0x12]), ([0x34, 0x34, 0x34, 0x34, 0x34, 0x34]), ([0x56, 0x56, 0x56, 0x56, 0x56, 0x56]))
-        self.ieee802_11_mac_0 = ieee802_11.mac(([0x23, 0x23, 0x23, 0x23, 0x23, 0x23]), ([0x42, 0x42, 0x42, 0x42, 0x42, 0x42]), ([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]))
+        self.ieee802_11ah_mac_0_0 = ieee802_11ah.mac(([0x12, 0x12, 0x12, 0x12, 0x12, 0x12]), ([0x34, 0x34, 0x34, 0x34, 0x34, 0x34]), ([0x56, 0x56, 0x56, 0x56, 0x56, 0x56]))
+        self.ieee802_11ah_mac_0 = ieee802_11ah.mac(([0x23, 0x23, 0x23, 0x23, 0x23, 0x23]), ([0x42, 0x42, 0x42, 0x42, 0x42, 0x42]), ([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]))
         self.foo_wireshark_connector_0 = foo.wireshark_connector(127, False)
-        self.foo_random_periodic_msg_source_0_0 = foo.random_periodic_msg_source(ieee802_11.mac_payload_to_payload(size), interval, messages, True, False, repetition+123)
-        self.foo_random_periodic_msg_source_0 = foo.random_periodic_msg_source(ieee802_11.mac_payload_to_payload(size), interval, messages, True, False, repetition+4242)
+        self.foo_random_periodic_msg_source_0_0 = foo.random_periodic_msg_source(ieee802_11ah.mac_payload_to_payload(size), interval, messages, True, False, repetition+123)
+        self.foo_random_periodic_msg_source_0 = foo.random_periodic_msg_source(ieee802_11ah.mac_payload_to_payload(size), interval, messages, True, False, repetition+4242)
         self.foo_packet_pad2_0_0_0 = foo.packet_pad2(False, False, 0.001, 4000, 5000)
         (self.foo_packet_pad2_0_0_0).set_min_output_buffer(960000)
         self.foo_packet_pad2_0_0 = foo.packet_pad2(False, False, 0.001, 4000, 5000)
         (self.foo_packet_pad2_0_0).set_min_output_buffer(960000)
         self.foo_packet_pad2_0 = foo.packet_pad2(False, False, 0.001, 4000, 5000)
         (self.foo_packet_pad2_0).set_min_output_buffer(960000)
-        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_gr_complex, 1, ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(size), encoding), "packet_len")
+        self.blocks_stream_to_tagged_stream_0 = blocks.stream_to_tagged_stream(gr.sizeof_gr_complex, 1, ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(size), encoding), "packet_len")
         self.blocks_skiphead_0 = blocks.skiphead(gr.sizeof_gr_complex*1, 2400 + repetition * 4)
         self.blocks_multiply_const_vxx_2 = blocks.multiply_const_vcc((0, ))
         self.blocks_multiply_const_vxx_1_1 = blocks.multiply_const_vcc((1 if interference == "noise" else 0, ))
@@ -113,10 +113,10 @@ class sim(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.foo_random_periodic_msg_source_0, 'out'), (self.ieee802_11_mac_0, 'app in'))
-        self.msg_connect((self.foo_random_periodic_msg_source_0_0, 'out'), (self.ieee802_11_mac_0_0, 'app in'))
-        self.msg_connect((self.ieee802_11_mac_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))
-        self.msg_connect((self.ieee802_11_mac_0_0, 'phy out'), (self.wifi_phy_hier_0_0, 'mac_in'))
+        self.msg_connect((self.foo_random_periodic_msg_source_0, 'out'), (self.ieee802_11ah_mac_0, 'app in'))
+        self.msg_connect((self.foo_random_periodic_msg_source_0_0, 'out'), (self.ieee802_11ah_mac_0_0, 'app in'))
+        self.msg_connect((self.ieee802_11ah_mac_0, 'phy out'), (self.wifi_phy_hier_0, 'mac_in'))
+        self.msg_connect((self.ieee802_11ah_mac_0_0, 'phy out'), (self.wifi_phy_hier_0_0, 'mac_in'))
         self.msg_connect((self.wifi_phy_hier_0, 'mac_out'), (self.foo_wireshark_connector_0, 'in'))
         self.connect((self.analog_noise_source_x_0, 0), (self.blocks_add_xx_1, 1))
         self.connect((self.analog_noise_source_x_0_0, 0), (self.blocks_multiply_const_vxx_1_0, 0))
@@ -148,8 +148,8 @@ class sim(gr.top_block):
             self.encoding = encoding
             self.wifi_phy_hier_0_0.set_encoding(self.encoding)
             self.wifi_phy_hier_0.set_encoding(self.encoding)
-            self.blocks_stream_to_tagged_stream_0.set_packet_len(ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(self.size), self.encoding))
-            self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(self.size), self.encoding))
+            self.blocks_stream_to_tagged_stream_0.set_packet_len(ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(self.size), self.encoding))
+            self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(self.size), self.encoding))
 
     def get_interference(self):
         return self.interference
@@ -189,8 +189,8 @@ class sim(gr.top_block):
     def set_size(self, size):
         with self._lock:
             self.size = size
-            self.blocks_stream_to_tagged_stream_0.set_packet_len(ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(self.size), self.encoding))
-            self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(self.size), self.encoding))
+            self.blocks_stream_to_tagged_stream_0.set_packet_len(ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(self.size), self.encoding))
+            self.blocks_stream_to_tagged_stream_0.set_packet_len_pmt(ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(self.size), self.encoding))
 
     def get_snr(self):
         return self.snr

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(sync_long.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(a0194fa153fe85f65ac2b217646c1d12)                     */
+/* BINDTOOL_HEADER_FILE_HASH(e98778c8f3be3d40e83470bceaf19f4b)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/sync_long.h>
+#include <ieee802_11ah/sync_long.h>
 // pydoc.h is automatically generated in the build directory
 #include <sync_long_pydoc.h>
 
 void bind_sync_long(py::module& m)
 {
 
-    using sync_long    = ::gr::ieee802_11::sync_long;
+    using sync_long    = ::gr::ieee802_11ah::sync_long;
 
 
     py::class_<sync_long, gr::block, gr::basic_block,

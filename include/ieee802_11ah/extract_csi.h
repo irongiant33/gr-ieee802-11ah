@@ -18,23 +18,23 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_IEEE802_11_EXTRACT_CSI_H
-#define INCLUDED_IEEE802_11_EXTRACT_CSI_H
+#ifndef INCLUDED_IEEE802_11AH_EXTRACT_CSI_H
+#define INCLUDED_IEEE802_11AH_EXTRACT_CSI_H
 
 #include <gnuradio/sync_block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API extract_csi : virtual public gr::sync_block
+class IEEE802_11AH_API extract_csi : virtual public gr::sync_block
 {
 public:
     typedef std::shared_ptr<extract_csi> sptr;
     static sptr make();
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_EXTRACT_CSI_H */
+#endif /* INCLUDED_IEEE802_11AH_EXTRACT_CSI_H */

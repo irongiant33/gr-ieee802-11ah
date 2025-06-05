@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDED_IEEE802_11_EQUALIZER_BASE_H
-#define INCLUDED_IEEE802_11_EQUALIZER_BASE_H
+#ifndef INCLUDED_IEEE802_11AH_EQUALIZER_BASE_H
+#define INCLUDED_IEEE802_11AH_EQUALIZER_BASE_H
 
 #include <gnuradio/digital/constellation.h>
 #include <gnuradio/gr_complex.h>
 #include "../utils.h"
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 namespace equalizer {
 
 class base
@@ -53,7 +53,7 @@ protected:
 };
 
 } // namespace equalizer
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */
 
-#endif /* INCLUDED_IEEE802_11_EQUALIZER_BASE_H */
+#endif /* INCLUDED_IEEE802_11AH_EQUALIZER_BASE_H */

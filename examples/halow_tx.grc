@@ -342,9 +342,9 @@ blocks:
     affinity: ''
     alias: ''
     bandwidth: 1e6
-    chan_est: ieee802_11.LS
+    chan_est: ieee802_11ah.LS
     comment: ''
-    encoding: ieee802_11.BPSK_1_2
+    encoding: ieee802_11ah.BPSK_1_2
     frequency: 863.5e6
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -356,8 +356,8 @@ blocks:
     coordinate: [440, 404.0]
     rotation: 180
     state: enabled
-- name: ieee802_11_mac_0
-  id: ieee802_11_mac
+- name: ieee802_11ah_mac_0
+  id: ieee802_11ah_mac
   parameters:
     affinity: ''
     alias: ''
@@ -934,14 +934,14 @@ blocks:
     state: enabled
 
 connections:
-- [blocks_message_strobe_0_0, strobe, ieee802_11_mac_0, app in]
+- [blocks_message_strobe_0_0, strobe, ieee802_11ah_mac_0, app in]
 - [blocks_multiply_const_vxx_0, '0', foo_packet_pad2_0, '0']
 - [blocks_vector_source_x_0, '0', halow_phy_hier_0, '0']
 - [foo_packet_pad2_0, '0', osmosdr_sink_0, '0']
 - [foo_packet_pad2_0, '0', uhd_usrp_sink_0, '0']
 - [halow_phy_hier_0, '0', blocks_multiply_const_vxx_0, '0']
-- [ieee802_11_mac_0, phy out, halow_phy_hier_0, mac_in]
-- [network_socket_pdu_0, pdus, ieee802_11_mac_0, app in]
+- [ieee802_11ah_mac_0, phy out, halow_phy_hier_0, mac_in]
+- [network_socket_pdu_0, pdus, ieee802_11ah_mac_0, app in]
 
 metadata:
   file_format: 1

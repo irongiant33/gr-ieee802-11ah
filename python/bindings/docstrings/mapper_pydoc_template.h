@@ -7,7 +7,7 @@
  *
  */
 #include "pydoc_macros.h"
-#define D(...) DOC(gr,ieee802_11, __VA_ARGS__ )
+#define D(...) DOC(gr,ieee802_11ah, __VA_ARGS__ )
 /*
   This file contains placeholders for docstrings for the Python bindings.
   Do not edit! These were automatically extracted during the binding process
@@ -16,18 +16,18 @@
 
 
  
- static const char *__doc_gr_ieee802_11_mapper = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_mapper = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_mapper_mapper_0 = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_mapper_mapper_0 = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_mapper_mapper_1 = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_mapper_mapper_1 = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_mapper_make = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_mapper_make = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_mapper_set_encoding = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_mapper_set_encoding = R"doc()doc";
 
   

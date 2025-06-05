@@ -14,42 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_MAPPER_H
-#define INCLUDED_IEEE802_11_MAPPER_H
+#ifndef INCLUDED_IEEE802_11AH_SYNC_LONG_H
+#define INCLUDED_IEEE802_11AH_SYNC_LONG_H
 
-#include <cstdint>
 #include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-enum Encoding {
-    BPSK_1_2 = 0,
-    QPSK_1_2 = 1,
-    QPSK_3_4 = 2,
-    QAM16_1_2 = 3,
-    QAM16_3_4 = 4,
-    QAM64_2_3 = 5,
-    QAM64_3_4 = 6,
-    QAM64_5_6 = 7,
-    BPSK_1_2_REP = 10,
-};
-
-// Required for fmt 10
-inline uint8_t format_as(Encoding e) {
-  return static_cast<uint8_t>(e);
-}
-
-class IEEE802_11_API mapper : virtual public block
+class IEEE802_11AH_API sync_long : virtual public block
 {
 public:
-    typedef std::shared_ptr<mapper> sptr;
-    static sptr make(Encoding mcs, bool debug = false);
-    virtual void set_encoding(Encoding mcs) = 0;
+    typedef std::shared_ptr<sync_long> sptr;
+    static sptr make(unsigned int sync_length, bool log = false, bool debug = false);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_MAPPER_H */
+#endif /* INCLUDED_IEEE802_11AH_SYNC_LONG_H */

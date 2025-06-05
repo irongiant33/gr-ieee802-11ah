@@ -17,7 +17,7 @@
 
 #include "comb.h"
 
-using namespace gr::ieee802_11::equalizer;
+using namespace gr::ieee802_11ah::equalizer;
 
 void comb::equalize(gr_complex* in,
                         int n,

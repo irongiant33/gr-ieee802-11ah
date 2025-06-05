@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <ieee802_11/mac.h>
+#include <ieee802_11ah/mac.h>
 
 #include <gnuradio/block_detail.h>
 #include <gnuradio/io_signature.h>
@@ -34,7 +34,7 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 class mac_impl : public mac
 {

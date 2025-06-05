@@ -8,10 +8,10 @@
 ########################################################################
 # Check if there is C++ code at all
 ########################################################################
-if(NOT ieee802_11_sources)
+if(NOT ieee802_11ah_sources)
     MESSAGE(STATUS "No C++ sources... skipping python bindings")
     return()
-endif(NOT ieee802_11_sources)
+endif(NOT ieee802_11ah_sources)
 
 ########################################################################
 # Check for pygccxml
@@ -28,7 +28,7 @@ include(GrPybind)
 # Python Bindings
 ########################################################################
 
-list(APPEND ieee802_11_python_files
+list(APPEND ieee802_11ah_python_files
     chunks_to_symbols_python.cc
     constellations_python.cc
     decode_mac_python.cc
@@ -43,9 +43,9 @@ list(APPEND ieee802_11_python_files
     sync_short_python.cc
     python_bindings.cc)
 
-GR_PYBIND_MAKE_OOT(ieee802_11 
+GR_PYBIND_MAKE_OOT(ieee802_11ah 
    ../..
-   gr::ieee802_11
-   "${ieee802_11_python_files}")
+   gr::ieee802_11ah
+   "${ieee802_11ah_python_files}")
 
-install(TARGETS ieee802_11_python DESTINATION ${GR_PYTHON_DIR}/ieee802_11 COMPONENT pythonapi)
+install(TARGETS ieee802_11ah_python DESTINATION ${GR_PYTHON_DIR}/ieee802_11ah COMPONENT pythonapi)

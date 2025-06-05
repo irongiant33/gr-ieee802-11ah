@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(extract_csi.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(e25959f49b55fd96cbc9354d42ad8c72)                     */
+/* BINDTOOL_HEADER_FILE_HASH(047d721a8e6d0594af1cdc2a21e5c555)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/extract_csi.h>
+#include <ieee802_11ah/extract_csi.h>
 // pydoc.h is automatically generated in the build directory
 #include <extract_csi_pydoc.h>
 
 void bind_extract_csi(py::module& m)
 {
 
-    using extract_csi    = ::gr::ieee802_11::extract_csi;
+    using extract_csi    = ::gr::ieee802_11ah::extract_csi;
 
 
     py::class_<extract_csi, gr::sync_block, gr::block, gr::basic_block,

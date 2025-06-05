@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_H
-#define INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_H
+#ifndef INCLUDED_IEEE802_11AH_ETHER_ENCAP_H
+#define INCLUDED_IEEE802_11AH_ETHER_ENCAP_H
 
-#include <gnuradio/tagged_stream_block.h>
-#include <ieee802_11/api.h>
+#include <gnuradio/block.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API chunks_to_symbols : virtual public tagged_stream_block
+class IEEE802_11AH_API ether_encap : virtual public block
 {
 public:
-    typedef std::shared_ptr<chunks_to_symbols> sptr;
-    static sptr make();
+    typedef std::shared_ptr<ether_encap> sptr;
+    static sptr make(bool debug);
 };
 
-} /* namespace ieee802_11 */
-} /* namespace gr */
+} // namespace ieee802_11ah
+} // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_H */
+#endif /* INCLUDED_IEEE802_11AH_ETHER_ENCAP_H */

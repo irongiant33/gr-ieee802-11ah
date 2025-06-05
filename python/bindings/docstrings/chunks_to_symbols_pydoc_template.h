@@ -7,7 +7,7 @@
  *
  */
 #include "pydoc_macros.h"
-#define D(...) DOC(gr,ieee802_11, __VA_ARGS__ )
+#define D(...) DOC(gr,ieee802_11ah, __VA_ARGS__ )
 /*
   This file contains placeholders for docstrings for the Python bindings.
   Do not edit! These were automatically extracted during the binding process
@@ -16,12 +16,12 @@
 
 
  
- static const char *__doc_gr_ieee802_11_chunks_to_symbols = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_chunks_to_symbols = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_chunks_to_symbols_chunks_to_symbols = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_chunks_to_symbols_chunks_to_symbols = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_chunks_to_symbols_make = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_chunks_to_symbols_make = R"doc()doc";
 
   

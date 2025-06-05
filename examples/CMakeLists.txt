@@ -1,6 +1,6 @@
 # Copyright 2023 Ryan Volz
 #
-# This file is part of gr-ieee802_11
+# This file is part of gr-ieee802_11ah
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #

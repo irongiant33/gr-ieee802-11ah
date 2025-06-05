@@ -25,7 +25,7 @@
 #include <gnuradio/io_signature.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 frame_equalizer::sptr
 frame_equalizer::make(Equalizer algo, double freq, double bw, bool log, bool debug)
@@ -136,7 +136,7 @@ int frame_equalizer_impl::general_work(int noutput_items,
         
         dout << "d_current_symbol: " << d_current_symbol << " i: " << i << " o: " << o << std::endl;
 
-        get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("wifi_start"));
+        get_tags_in_window(tags, 0, i, i + 1, pmt::string_to_symbol("halow_start"));
 
         // new frame
         if (tags.size()) {
@@ -420,7 +420,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     }
 
     //compute frame symbols, encoding and bytes members
-    ofdm_param ofdm((gr::ieee802_11::Encoding) mcs);
+    ofdm_param ofdm((gr::ieee802_11ah::Encoding) mcs);
     frame_param frame(ofdm, (int)length);
 
     d_frame_symbols = frame.n_sym;
@@ -470,5 +470,5 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     
 }
 
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */

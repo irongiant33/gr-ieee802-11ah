@@ -14,8 +14,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_VITERBI_DECODER_H
-#define INCLUDED_IEEE802_11_VITERBI_DECODER_H
+#ifndef INCLUDED_IEEE802_11AH_VITERBI_DECODER_H
+#define INCLUDED_IEEE802_11AH_VITERBI_DECODER_H
 
 #ifdef IEEE80211_MSSE2
 #include "viterbi_decoder_x86.h"
@@ -23,4 +23,4 @@
 #include "viterbi_decoder_generic.h"
 #endif
 
-#endif /* INCLUDED_IEEE802_11_VITERBI_DECODER_H */
+#endif /* INCLUDED_IEEE802_11AH_VITERBI_DECODER_H */
