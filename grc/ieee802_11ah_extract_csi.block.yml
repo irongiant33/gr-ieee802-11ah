@@ -1,10 +1,10 @@
-id: ieee802_11_extract_csi
+id: ieee802_11ah_extract_csi
 label: WiFi Extract CSI
-category: '[IEEE802.11]'
+category: '[IEEE802.11AH]'
 
 templates:
-  imports: import ieee802_11
-  make: ieee802_11.extract_csi()
+  imports: import ieee802_11ah
+  make: ieee802_11ah.extract_csi()
 
 inputs:
 - label: pdu in

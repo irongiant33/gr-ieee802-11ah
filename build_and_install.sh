@@ -70,7 +70,7 @@ clean_build() {
 # Function to check for and remove library artifacts
 check_and_remove_artifacts() {
     LIB_DIR="/usr/local/lib"
-    ARTIFACT_PATTERN="libgnuradio-ieee802_11.so.*"
+    ARTIFACT_PATTERN="libgnuradio-ieee802_11ah.so.*"
     log "Checking for library artifacts in $LIB_DIR..."
     if ls $LIB_DIR/$ARTIFACT_PATTERN >/dev/null 2>&1; then
         log "Found the following artifacts:"

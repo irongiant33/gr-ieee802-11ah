@@ -25,7 +25,7 @@
 #include <gnuradio/io_signature.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 frame_equalizer::sptr
 frame_equalizer::make(Equalizer algo, double freq, double bw, bool log, bool debug)
@@ -420,7 +420,7 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     }
 
     //compute frame symbols, encoding and bytes members
-    ofdm_param ofdm((gr::ieee802_11::Encoding) mcs);
+    ofdm_param ofdm((gr::ieee802_11ah::Encoding) mcs);
     frame_param frame(ofdm, (int)length);
 
     d_frame_symbols = frame.n_sym;
@@ -470,5 +470,5 @@ bool frame_equalizer_impl::parse_signal(uint8_t* decoded_bits)
     
 }
 
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */

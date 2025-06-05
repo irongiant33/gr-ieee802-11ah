@@ -18,13 +18,13 @@
 #include <gnuradio/fft/fft.h>
 #include <gnuradio/filter/fir_filter.h>
 #include <gnuradio/io_signature.h>
-#include <ieee802_11/sync_long.h>
+#include <ieee802_11ah/sync_long.h>
 #include <volk/volk.h>
 
 #include <list>
 #include <tuple>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 using namespace std;
 
 

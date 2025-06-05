@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <ieee802_11/decode_mac.h>
+#include <ieee802_11ah/decode_mac.h>
 
 #include "utils.h"
 #include "viterbi_decoder/viterbi_decoder.h"
@@ -23,9 +23,9 @@
 #include <boost/crc.hpp>
 #include <iomanip>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
-#define LINKTYPE_IEEE802_11 105 /* http://www.tcpdump.org/linktypes.html */
+#define LINKTYPE_IEEE802_11AH 105 /* http://www.tcpdump.org/linktypes.html */
 #define BYTE_SERVICE 1
 #define BYTE_CRC32 4
 
@@ -107,7 +107,7 @@ public:
                      << d_frame.n_sym << std::endl;
                 
                 //if MCS = 10
-                if(d_ofdm.encoding == gr::ieee802_11::BPSK_1_2_REP){
+                if(d_ofdm.encoding == gr::ieee802_11ah::BPSK_1_2_REP){
                     
                     //deinterleave the complex symbols
                     gr_complex d_deinterleaved[CODED_BITS_PER_OFDM_SYMBOL];
@@ -199,7 +199,7 @@ public:
         // create PDU
         pmt::pmt_t blob = pmt::make_blob(out_bytes + BYTE_SERVICE, d_frame.psdu_size - BYTE_CRC32);
         d_meta =
-            pmt::dict_add(d_meta, pmt::mp("dlt"), pmt::from_long(LINKTYPE_IEEE802_11));
+            pmt::dict_add(d_meta, pmt::mp("dlt"), pmt::from_long(LINKTYPE_IEEE802_11AH));
 
         message_port_pub(pmt::mp("out"), pmt::cons(d_meta, blob));
 

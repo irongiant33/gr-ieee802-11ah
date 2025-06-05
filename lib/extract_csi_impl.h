@@ -18,13 +18,13 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_IEEE802_11_EXTRACT_CSI_IMPL_H
-#define INCLUDED_IEEE802_11_EXTRACT_CSI_IMPL_H
+#ifndef INCLUDED_IEEE802_11AH_EXTRACT_CSI_IMPL_H
+#define INCLUDED_IEEE802_11AH_EXTRACT_CSI_IMPL_H
 
-#include <ieee802_11/extract_csi.h>
+#include <ieee802_11ah/extract_csi.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 class extract_csi_impl : public extract_csi
 {
@@ -41,7 +41,7 @@ public:
              gr_vector_void_star& output_items);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_EXTRACT_CSI_IMPL_H */
+#endif /* INCLUDED_IEEE802_11AH_EXTRACT_CSI_IMPL_H */

@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDED_IEEE802_11_FRAME_EQUALIZER_IMPL_H
-#define INCLUDED_IEEE802_11_FRAME_EQUALIZER_IMPL_H
+#ifndef INCLUDED_IEEE802_11AH_FRAME_EQUALIZER_IMPL_H
+#define INCLUDED_IEEE802_11AH_FRAME_EQUALIZER_IMPL_H
 
 #include "equalizer/base.h"
 #include "viterbi_decoder/viterbi_decoder.h"
-#include <ieee802_11/constellations.h>
-#include <ieee802_11/frame_equalizer.h>
+#include <ieee802_11ah/constellations.h>
+#include <ieee802_11ah/frame_equalizer.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 enum frame_coding{
     BCC,
@@ -95,7 +95,7 @@ private:
 
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_FRAME_EQUALIZER_IMPL_H */
+#endif /* INCLUDED_IEEE802_11AH_FRAME_EQUALIZER_IMPL_H */

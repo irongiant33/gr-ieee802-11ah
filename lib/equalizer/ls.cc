@@ -19,7 +19,7 @@
 #include <cstring>
 #include <iostream>
 
-using namespace gr::ieee802_11::equalizer;
+using namespace gr::ieee802_11ah::equalizer;
 
 void ls::equalize(gr_complex* in,
                   int n,

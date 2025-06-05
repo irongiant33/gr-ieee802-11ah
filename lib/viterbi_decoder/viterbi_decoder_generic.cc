@@ -81,7 +81,7 @@
         }                                                         \
     }
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 
 void viterbi_decoder::viterbi_butterfly2_generic(unsigned char* symbols,

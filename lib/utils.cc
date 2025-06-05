@@ -20,15 +20,15 @@
 #include <cassert>
 #include <cstring>
 
-using gr::ieee802_11::BPSK_1_2;
-using gr::ieee802_11::QPSK_1_2;
-using gr::ieee802_11::QPSK_3_4;
-using gr::ieee802_11::QAM16_1_2;
-using gr::ieee802_11::QAM16_3_4;
-using gr::ieee802_11::QAM64_2_3;
-using gr::ieee802_11::QAM64_3_4;
-using gr::ieee802_11::QAM64_5_6;
-using gr::ieee802_11::BPSK_1_2_REP;
+using gr::ieee802_11ah::BPSK_1_2;
+using gr::ieee802_11ah::QPSK_1_2;
+using gr::ieee802_11ah::QPSK_3_4;
+using gr::ieee802_11ah::QAM16_1_2;
+using gr::ieee802_11ah::QAM16_3_4;
+using gr::ieee802_11ah::QAM64_2_3;
+using gr::ieee802_11ah::QAM64_3_4;
+using gr::ieee802_11ah::QAM64_5_6;
+using gr::ieee802_11ah::BPSK_1_2_REP;
 
 ofdm_param::ofdm_param(Encoding e)
 {
@@ -40,7 +40,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 24;
         n_dbps = 12;
         //rate_field = 0x00; // i.e. MCS 0b00000000
-        constellation =  gr::ieee802_11::constellation_bpsk::make();
+        constellation =  gr::ieee802_11ah::constellation_bpsk::make();
         break;
 
     case QPSK_1_2:
@@ -48,7 +48,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 48;
         n_dbps = 24;
         //rate_field = 0x05; // 0b00000101
-        constellation =  gr::ieee802_11::constellation_qpsk::make();
+        constellation =  gr::ieee802_11ah::constellation_qpsk::make();
         break;
 
     case QPSK_3_4:
@@ -56,7 +56,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 48;
         n_dbps = 36;
         //rate_field = 0x07; // 0b00000111
-        constellation =  gr::ieee802_11::constellation_qpsk::make();
+        constellation =  gr::ieee802_11ah::constellation_qpsk::make();
         break;
 
     case QAM16_1_2:
@@ -64,7 +64,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 96;
         n_dbps = 48;
         //rate_field = 0x09; // 0b00001001
-        constellation =  gr::ieee802_11::constellation_16qam::make();
+        constellation =  gr::ieee802_11ah::constellation_16qam::make();
         break;
 
     case QAM16_3_4:
@@ -72,7 +72,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 96;
         n_dbps = 72;
         //rate_field = 0x0B; // 0b00001011
-        constellation =  gr::ieee802_11::constellation_16qam::make();
+        constellation =  gr::ieee802_11ah::constellation_16qam::make();
         break;
 
     case QAM64_2_3:
@@ -80,7 +80,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 144;
         n_dbps = 96;
         //rate_field = 0x01; // 0b00000001
-        constellation =  gr::ieee802_11::constellation_16qam::make();
+        constellation =  gr::ieee802_11ah::constellation_16qam::make();
         break;
 
     case QAM64_3_4:
@@ -88,7 +88,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 144;
         n_dbps = 108;
         //rate_field = 0x03; // 0b00000011
-        constellation =  gr::ieee802_11::constellation_64qam::make();
+        constellation =  gr::ieee802_11ah::constellation_64qam::make();
         break;
 
     case QAM64_5_6:
@@ -96,7 +96,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 144;
         n_dbps = 120;
         //rate_field = 0x03; // 0b00000011
-        constellation =  gr::ieee802_11::constellation_64qam::make();
+        constellation =  gr::ieee802_11ah::constellation_64qam::make();
         break;
     
     case BPSK_1_2_REP:
@@ -104,7 +104,7 @@ ofdm_param::ofdm_param(Encoding e)
         n_cbps = 12;
         n_dbps = 6;
         //rate_field = 0x0a; // i.e. MCS 0b00001010
-        constellation =  gr::ieee802_11::constellation_bpsk::make();
+        constellation =  gr::ieee802_11ah::constellation_bpsk::make();
         break;
 
     defaut:

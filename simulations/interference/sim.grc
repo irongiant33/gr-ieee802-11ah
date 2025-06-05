@@ -810,7 +810,7 @@
     </param>
     <param>
       <key>packet_len</key>
-      <value>ieee802_11.payload_to_samples(ieee802_11.mac_payload_to_payload(size), encoding)</value>
+      <value>ieee802_11ah.payload_to_samples(ieee802_11ah.mac_payload_to_payload(size), encoding)</value>
     </param>
     <param>
       <key>type</key>
@@ -1085,7 +1085,7 @@
     </param>
     <param>
       <key>msg_len</key>
-      <value>ieee802_11.mac_payload_to_payload(size)</value>
+      <value>ieee802_11ah.mac_payload_to_payload(size)</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -1148,7 +1148,7 @@
     </param>
     <param>
       <key>msg_len</key>
-      <value>ieee802_11.mac_payload_to_payload(size)</value>
+      <value>ieee802_11ah.mac_payload_to_payload(size)</value>
     </param>
     <param>
       <key>minoutbuf</key>
@@ -1219,7 +1219,7 @@
     </param>
   </block>
   <block>
-    <key>ieee802_11_mac</key>
+    <key>ieee802_11ah_mac</key>
     <param>
       <key>bss_mac</key>
       <value>[0xff, 0xff, 0xff, 0xff, 0xff, 0xff]</value>
@@ -1254,7 +1254,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>ieee802_11_mac_0</value>
+      <value>ieee802_11ah_mac_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1270,7 +1270,7 @@
     </param>
   </block>
   <block>
-    <key>ieee802_11_mac</key>
+    <key>ieee802_11ah_mac</key>
     <param>
       <key>bss_mac</key>
       <value>[0x56, 0x56, 0x56, 0x56, 0x56, 0x56]</value>
@@ -1305,7 +1305,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>ieee802_11_mac_0_0</value>
+      <value>ieee802_11ah_mac_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1834,7 +1834,7 @@
     </param>
     <param>
       <key>chan_est</key>
-      <value>ieee802_11.LS</value>
+      <value>ieee802_11ah.LS</value>
     </param>
     <param>
       <key>encoding</key>
@@ -1893,7 +1893,7 @@
     </param>
     <param>
       <key>chan_est</key>
-      <value>ieee802_11.LS</value>
+      <value>ieee802_11ah.LS</value>
     </param>
     <param>
       <key>encoding</key>
@@ -2000,13 +2000,13 @@
   </connection>
   <connection>
     <source_block_id>foo_random_periodic_msg_source_0</source_block_id>
-    <sink_block_id>ieee802_11_mac_0</sink_block_id>
+    <sink_block_id>ieee802_11ah_mac_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>app in</sink_key>
   </connection>
   <connection>
     <source_block_id>foo_random_periodic_msg_source_0_0</source_block_id>
-    <sink_block_id>ieee802_11_mac_0_0</sink_block_id>
+    <sink_block_id>ieee802_11ah_mac_0_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>app in</sink_key>
   </connection>
@@ -2017,13 +2017,13 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>ieee802_11_mac_0</source_block_id>
+    <source_block_id>ieee802_11ah_mac_0</source_block_id>
     <sink_block_id>wifi_phy_hier_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac_in</sink_key>
   </connection>
   <connection>
-    <source_block_id>ieee802_11_mac_0_0</source_block_id>
+    <source_block_id>ieee802_11ah_mac_0_0</source_block_id>
     <sink_block_id>wifi_phy_hier_0_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac_in</sink_key>

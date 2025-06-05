@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Bastian Bloessl <bloessl@ccs-labs.org>
+ * Copyright (C) 2013, 2016 Bastian Bloessl <bloessl@ccs-labs.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,39 +13,24 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
  */
-
-
-#ifndef INCLUDED_IEEE802_11_FRAME_EQUALIZER_H
-#define INCLUDED_IEEE802_11_FRAME_EQUALIZER_H
+#ifndef INCLUDED_IEEE802_11AH_DECODE_MAC_H
+#define INCLUDED_IEEE802_11AH_DECODE_MAC_H
 
 #include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-enum Equalizer {
-    LS = 0,
-    LMS = 1,
-    COMB = 2,
-    STA = 3,
-};
-
-
-class IEEE802_11_API frame_equalizer : virtual public gr::block
+class IEEE802_11AH_API decode_mac : virtual public block
 {
-
 public:
-    typedef std::shared_ptr<frame_equalizer> sptr;
-    static sptr make(Equalizer algo, double freq, double bw, bool log, bool debug);
-    virtual void set_algorithm(Equalizer algo) = 0;
-    virtual void set_bandwidth(double bw) = 0;
-    virtual void set_frequency(double freq) = 0;
+    typedef std::shared_ptr<decode_mac> sptr;
+    static sptr make(bool log = false, bool debug = false);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_FRAME_EQUALIZER_H */
+#endif /* INCLUDED_IEEE802_11AH_DECODE_MAC_H */

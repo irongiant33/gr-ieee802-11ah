@@ -21,7 +21,7 @@
 #include <gnuradio/io_signature.h>
 #include <string>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 ether_encap_impl::ether_encap_impl(bool debug)
     : block("ether_encap",

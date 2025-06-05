@@ -26,7 +26,7 @@
 #include <gnuradio/io_signature.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 extract_csi::sptr extract_csi::make()
 {
@@ -77,5 +77,5 @@ int extract_csi_impl::work(int noutput_items,
     return 1;
 }
 
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */

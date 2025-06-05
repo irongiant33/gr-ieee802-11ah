@@ -14,16 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_MAC_H
-#define INCLUDED_IEEE802_11_MAC_H
+#ifndef INCLUDED_IEEE802_11AH_MAC_H
+#define INCLUDED_IEEE802_11AH_MAC_H
 
 #include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API mac : virtual public block
+class IEEE802_11AH_API mac : virtual public block
 {
 public:
     typedef std::shared_ptr<mac> sptr;
@@ -32,7 +32,7 @@ public:
                      std::vector<uint8_t> bss_mac);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_MAC_H */
+#endif /* INCLUDED_IEEE802_11AH_MAC_H */
