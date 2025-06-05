@@ -224,3 +224,5 @@ of the TUN/TAP interface is handled by the scripts in the ```apps``` folder.
 
 For further information please checkout our project page
 [https://www.wime-project.net](https://www.wime-project.net)
+
+[Presentation on gr-ieee802-11ah](https://www.youtube.com/watch?v=x1QhxR8Mw5o&t=1256s) at GNU Radio Conference 2024. This is prior to contributions by @neo-knight-td that enabled full receive functionality for 1MHz S1G PPDUs, so we will have to create another video to show how this solution works.

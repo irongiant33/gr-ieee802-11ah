@@ -20,6 +20,9 @@
 category: common
 depends:
 - gnuradio
+- uhd
+- liblog4cpp
+- gr-foo
 description: An IEEE802.11ah (Wifi HaLow) receiver for GNU Radio that works with 1MHz PPDUs.
 gitbranch: master
 inherit: cmake
