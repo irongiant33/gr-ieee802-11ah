@@ -8,13 +8,9 @@ This is a IEEE 802.11ah (Wifi HaLow) transceiver for GNU Radio based on the gr-i
 
 1. [Installation](#installation)
 
-2. [Switching back to gr-ieee802-11](#switching-back-to-gr-ieee802-11)
-
 1. [Usage](#usage)
 
 1. [Troubleshooting](#troubleshooting)
-
-1. [Further information](#further-information)
 
 # Development
 
@@ -41,7 +37,8 @@ There are several ways to install GNU Radio. You can use
 
 ### gr-foo
 
-I have some non project specific GNU Radio blocks in my gr-foo repo that are
+
+Some non project specific GNU Radio blocks from Bastian Bloessl's gr-foo repo are
 needed. For example the Wireshark connector. You can find these blocks at
 [https://github.com/bastibl/gr-foo](https://github.com/bastibl/gr-foo). They are
 installed with the typical command sequence:
@@ -56,24 +53,32 @@ installed with the typical command sequence:
     sudo ldconfig
 
 
-## Installation of the maint-3.10-802-11-ah branch
+## Installation
 
-First, clone the repository and switch to the maint-3.10-802-11-ah branch
+First, clone the repository :
 
 ```
-git clone https://github.com/bastibl/gr-ieee802-11
+git clone https://github.com/irongiant33/gr-ieee802-11ah
 cd gr-ieee802-11
-git checkout maint-3.10-802-11-ah
 ```
 
-Then, proceed with the installation of the the maint-3.10-802-11-ah branch by running the ``build_and_install.sh`` script :
+Then, proceed with the installation by running the ``build_and_install.sh`` script :
 
 ```
 build_and_install.sh
 ```
 
-This script will make sure to uninstall any previous instance of gr-ieee802-11. It will also check for previous installation artifacts on your computer that may interfere with the proper working of maint-3.10-802-11-ah.
+Alternatively, you can perform the installation manually using the following commands :
 
+```
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install
+sudo ldconfig
+cd ..
+```
 
 ### Adjust Maximum Shared Memory
 
@@ -124,25 +129,7 @@ minimize IQ imbalance and TX DC offsets. See the [application
 notes](http://files.ettus.com/manual/page_calibration.html).
 
 
-# Switching back to gr-ieee802-11
-
-If you want to switch back to the gr-ieee802-11 branch, we recommend you to run the ``clean_and_uninstall.sh`` script first :
-
-```
-./clean_and_uninstall.sh
-```
-
-This script will make sure to uninstall maint-3.10-802-11-ah properely so you can start with a fresh setup for the installation of gr-ieee802-11.
-
-After, switch back to the gr-ieee802-11 branch :
-
-```
-git checkout maint-3.10-802-11-ah
-```
-
-From there, follow the installation guidelines of the README.
-
-# Checking your installation
+## Checking your installation
 
 As a first step I recommend to test the ```halow_loopback.grc``` flow graph. This
 flow graph does not need any hardware and allows you to ensure that the software
@@ -181,11 +168,13 @@ can generate traces of the simulation. You can read about the logging feature
 and how to use it on the [GNU Radio
 Wiki](https://wiki.gnuradio.org/index.php/Logging).
 
+## Decoding a WiFi HaLow communication
+
+The ```halow_rx.grc``` graph can be used to test the decoding of a real  WiFi HaLoW communication. The graph requires to download IQ Samples from a dedicated IQEngine [folder](https://www.iqengine.org/view/api/gnuradio/iqengine/802.11ah%20WiFi%20HaLow%2F1mhz-mcs0-chan43) and placing it into the ```/tmp``` directory.
 
 ## Unidirectional communication
 
-As first over the air test I recommend to try ```halow_rx.grc``` and
-```halow_tx.grc```. Just open the flow graphs in GNU Radio companion and execute
+As first over the air test I recommend to try ```halow_transceiver.grc```. Just open the flow graphs in GNU Radio companion and execute
 them. If it does not work out of the box, try to play around with the gain. If
 everything works as intended you should see similar output as in the
 ```halow_loopback.grc``` example.
@@ -218,11 +207,3 @@ of the TUN/TAP interface is handled by the scripts in the ```apps``` folder.
 - If 'D's appear, it might be related to your Ethernet card. Assert that you
   made the sysconf changes recommended by Ettus. Did you try to connect you PC
   directly to the USRP without a switch in between?
-
-
-# Further information
-
-For further information please checkout our project page
-[https://www.wime-project.net](https://www.wime-project.net)
-
-[Presentation on gr-ieee802-11ah](https://www.youtube.com/watch?v=x1QhxR8Mw5o&t=1256s) at GNU Radio Conference 2024. This is prior to contributions by @neo-knight-td that enabled full receive functionality for 1MHz S1G PPDUs, so we will have to create another video to show how this solution works.
