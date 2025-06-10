@@ -155,7 +155,7 @@ works as intended you should see some decoded packets on the console.
 If GRC complains that it can't find some blocks (other than performance counters
 and hierarchical blocks) like
 
-    >>> Error: Block key "ieee802_11_ofdm_mac" not found in Platform - grc(GNU Radio Companion)
+    >>> Error: Block key "ieee802_11ah_ofdm_mac" not found in Platform - grc(GNU Radio Companion)
     >>> Error: Block key "foo_packet_pad" not found in Platform - grc(GNU Radio Companion)
 
 Most likely you used a different ```CMAKE_INSTALL_PREFIX``` for the module than

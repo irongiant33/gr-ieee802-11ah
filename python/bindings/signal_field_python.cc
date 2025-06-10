@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(signal_field.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(423674352455f6357bd249e1f5221cb4)                     */
+/* BINDTOOL_HEADER_FILE_HASH(1d73ccbe978f8b7c7a99238507688ac1)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/signal_field.h>
+#include <ieee802_11ah/signal_field.h>
 // pydoc.h is automatically generated in the build directory
 #include <signal_field_pydoc.h>
 
 void bind_signal_field(py::module& m)
 {
 
-    using signal_field    = ::gr::ieee802_11::signal_field;
+    using signal_field    = ::gr::ieee802_11ah::signal_field;
 
 
     py::class_<signal_field, gr::digital::packet_header_default,

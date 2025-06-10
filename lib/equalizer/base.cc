@@ -19,7 +19,7 @@
 #include <cstring>
 #include <iostream>
 
-using namespace gr::ieee802_11::equalizer;
+using namespace gr::ieee802_11ah::equalizer;
 
 const gr_complex base::LONG[] = { 0,  0,  0,  1, -1,  1, -1, -1,  1, -1, 1, 1, -1, 1, 1, 1, 0, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 0, 0};
     //old (and incorrect) 

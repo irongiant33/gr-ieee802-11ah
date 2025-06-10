@@ -5,13 +5,13 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-import ieee802_11
+import ieee802_11ah
 
 ###############################################
 #                 16-QAM
 ###############################################
 
-c = ieee802_11.constellation_16qam()
+c = ieee802_11ah.constellation_16qam()
 a = np.array(c.points())
 p = np.average(np.abs(a)**2)
 level = .1**.5
@@ -56,7 +56,7 @@ plt.show()
 #                 64-QAM
 ###############################################
 
-c = ieee802_11.constellation_64qam()
+c = ieee802_11ah.constellation_64qam()
 a = np.array(c.points())
 p = np.average(np.abs(a)**2)
 level = (1.0/42)**.5

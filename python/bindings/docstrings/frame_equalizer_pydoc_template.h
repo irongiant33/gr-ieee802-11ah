@@ -7,7 +7,7 @@
  *
  */
 #include "pydoc_macros.h"
-#define D(...) DOC(gr,ieee802_11, __VA_ARGS__ )
+#define D(...) DOC(gr,ieee802_11ah, __VA_ARGS__ )
 /*
   This file contains placeholders for docstrings for the Python bindings.
   Do not edit! These were automatically extracted during the binding process
@@ -16,24 +16,24 @@
 
 
  
- static const char *__doc_gr_ieee802_11_frame_equalizer = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_frame_equalizer_0 = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_frame_equalizer_0 = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_frame_equalizer_1 = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_frame_equalizer_1 = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_make = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_make = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_set_algorithm = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_set_algorithm = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_set_bandwidth = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_set_bandwidth = R"doc()doc";
 
 
- static const char *__doc_gr_ieee802_11_frame_equalizer_set_frequency = R"doc()doc";
+ static const char *__doc_gr_ieee802_11ah_frame_equalizer_set_frequency = R"doc()doc";
 
   

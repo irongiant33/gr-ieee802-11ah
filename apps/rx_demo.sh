@@ -1,9 +1,9 @@
 #!/bin/bash
 
-### Enable Wireshark Connector in wifi_rx flow graph
+### Enable Wireshark Connector in halow_rx flow graph
 
-FILE="/tmp/wifi.pcap"
-FLOWGRAPH="wifi_rx.py"
+FILE="/tmp/halow.pcap"
+FLOWGRAPH="halow_rx.py"
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ### create fifo

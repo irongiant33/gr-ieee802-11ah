@@ -19,7 +19,7 @@
 #include <gnuradio/io_signature.h>
 #include <assert.h>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 chunks_to_symbols::sptr chunks_to_symbols::make()
 {

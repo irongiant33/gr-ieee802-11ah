@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDED_IEEE802_11_EQUALIZER_LMS_H
-#define INCLUDED_IEEE802_11_EQUALIZER_LMS_H
+#ifndef INCLUDED_IEEE802_11AH_EQUALIZER_LMS_H
+#define INCLUDED_IEEE802_11AH_EQUALIZER_LMS_H
 
 #include "base.h"
 #include <vector>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 namespace equalizer {
 
 class lms : public base
@@ -44,7 +44,7 @@ private:
 };
 
 } // namespace equalizer
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */
 
-#endif /* INCLUDED_IEEE802_11_EQUALIZER_LMS_H */
+#endif /* INCLUDED_IEEE802_11AH_EQUALIZER_LMS_H */

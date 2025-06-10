@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_IMPL_H
-#define INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_IMPL_H
+#ifndef INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_IMPL_H
+#define INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_IMPL_H
 
-#include <ieee802_11/chunks_to_symbols.h>
-#include <ieee802_11/constellations.h>
+#include <ieee802_11ah/chunks_to_symbols.h>
+#include <ieee802_11ah/constellations.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 class chunks_to_symbols_impl : public chunks_to_symbols
 {
@@ -42,7 +42,7 @@ private:
     constellation_64qam::sptr d_64qam;
 };
 
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */
 
-#endif /* INCLUDED_IEEE802_11_CHUNKS_TO_SYMBOLS_IMPL_H */
+#endif /* INCLUDED_IEEE802_11AH_CHUNKS_TO_SYMBOLS_IMPL_H */

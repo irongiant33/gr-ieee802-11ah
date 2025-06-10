@@ -14,23 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_DECODE_MAC_H
-#define INCLUDED_IEEE802_11_DECODE_MAC_H
 
-#include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#ifndef INCLUDED_IEEE802_11AH_SIGNAL_FIELD_H
+#define INCLUDED_IEEE802_11AH_SIGNAL_FIELD_H
+
+#include <gnuradio/digital/packet_header_default.h>
+#include <ieee802_11ah/api.h>
+#include <memory>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API decode_mac : virtual public block
+class IEEE802_11AH_API signal_field : virtual public digital::packet_header_default
 {
 public:
-    typedef std::shared_ptr<decode_mac> sptr;
-    static sptr make(bool log = false, bool debug = false);
+    typedef std::shared_ptr<signal_field> sptr;
+    static sptr make();
+
+protected:
+    signal_field();
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_DECODE_MAC_H */
+#endif /* INCLUDED_IEEE802_11AH_SIGNAL_FIELD_H */

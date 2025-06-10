@@ -19,7 +19,7 @@
 #include <cstring>
 #include <iostream>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 base::base() : d_store_pos(0) {}
 

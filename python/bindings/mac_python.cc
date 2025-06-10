@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(mac.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(1c47a20e97ec549a0e6ec5362f06ad6f)                     */
+/* BINDTOOL_HEADER_FILE_HASH(1186c085e853e83489f264295e7083f9)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/mac.h>
+#include <ieee802_11ah/mac.h>
 // pydoc.h is automatically generated in the build directory
 #include <mac_pydoc.h>
 
 void bind_mac(py::module& m)
 {
 
-    using mac    = ::gr::ieee802_11::mac;
+    using mac    = ::gr::ieee802_11ah::mac;
 
 
     py::class_<mac, gr::block, gr::basic_block,

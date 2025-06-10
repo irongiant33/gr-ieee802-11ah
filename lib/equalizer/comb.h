@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDED_IEEE802_11_EQUALIZER_COMB_H
-#define INCLUDED_IEEE802_11_EQUALIZER_COMB_H
+#ifndef INCLUDED_IEEE802_11AH_EQUALIZER_COMB_H
+#define INCLUDED_IEEE802_11AH_EQUALIZER_COMB_H
 
 #include "base.h"
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 namespace equalizer {
 
 class comb : public base
@@ -41,7 +41,7 @@ private:
 };
 
 } // namespace equalizer
-} /* namespace ieee802_11 */
+} /* namespace ieee802_11ah */
 } /* namespace gr */
 
-#endif /* INCLUDED_IEEE802_11_EQUALIZER_COMB_H */
+#endif /* INCLUDED_IEEE802_11AH_EQUALIZER_COMB_H */

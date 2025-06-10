@@ -21,7 +21,7 @@
 #include <gnuradio/io_signature.h>
 #include <string>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 ether_encap_impl::ether_encap_impl(bool debug)
     : block("ether_encap",
@@ -32,19 +32,19 @@ ether_encap_impl::ether_encap_impl(bool debug)
 {
 
     message_port_register_out(pmt::mp("to tap"));
-    message_port_register_out(pmt::mp("to wifi"));
+    message_port_register_out(pmt::mp("to halow"));
 
     message_port_register_in(pmt::mp("from tap"));
     set_msg_handler(
         pmt::mp("from tap"),
         boost::bind(&ether_encap_impl::from_tap, this, boost::placeholders::_1));
-    message_port_register_in(pmt::mp("from wifi"));
+    message_port_register_in(pmt::mp("from halow"));
     set_msg_handler(
-        pmt::mp("from wifi"),
-        boost::bind(&ether_encap_impl::from_wifi, this, boost::placeholders::_1));
+        pmt::mp("from halow"),
+        boost::bind(&ether_encap_impl::from_halow, this, boost::placeholders::_1));
 }
 
-void ether_encap_impl::from_wifi(pmt::pmt_t msg)
+void ether_encap_impl::from_halow(pmt::pmt_t msg)
 {
 
     msg = pmt::cdr(msg);
@@ -120,7 +120,7 @@ void ether_encap_impl::from_tap(pmt::pmt_t msg)
         std::memcpy(
             buf + 8, data + sizeof(ethernet_header), len - sizeof(ethernet_header));
         pmt::pmt_t blob = pmt::make_blob(buf, len + 8 - sizeof(ethernet_header));
-        message_port_pub(pmt::mp("to wifi"), pmt::cons(pmt::PMT_NIL, blob));
+        message_port_pub(pmt::mp("to halow"), pmt::cons(pmt::PMT_NIL, blob));
         break;
     }
     case 0x0608:

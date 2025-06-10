@@ -1,4 +1,4 @@
-{% set oot_name = "ieee802_11" %}
+{% set oot_name = "ieee802_11ah" %}
 {% set name = "gnuradio-" + oot_name %}
 # Set package version from cleaned up git tags if possible,
 # otherwise fall back to date-based version.
@@ -89,5 +89,5 @@ about:
 
     Example gnuradio-companion flowgraphs are installed with the package and
     can be found in:
-        - (Linux/macOS) `$CONDA_PREFIX/share/gr-ieee802_11/examples`
-        - (Windows) `%CONDA_PREFIX%\share\gr-ieee802_11\examples`
+        - (Linux/macOS) `$CONDA_PREFIX/share/gr-ieee802_11ah/examples`
+        - (Windows) `%CONDA_PREFIX%\share\gr-ieee802_11ah\examples`

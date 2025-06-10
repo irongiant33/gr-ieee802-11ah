@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Bastian Bloessl <bloessl@ccs-labs.org>
+ * Copyright (C) 2013, 2016 Bastian Bloessl <bloessl@ccs-labs.org>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_ETHER_ENCAP_H
-#define INCLUDED_IEEE802_11_ETHER_ENCAP_H
+#ifndef INCLUDED_IEEE802_11AH_SYNC_SHORT_H
+#define INCLUDED_IEEE802_11AH_SYNC_SHORT_H
 
 #include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API ether_encap : virtual public block
+class IEEE802_11AH_API sync_short : virtual public block
 {
 public:
-    typedef std::shared_ptr<ether_encap> sptr;
-    static sptr make(bool debug);
+    typedef std::shared_ptr<sync_short> sptr;
+    static sptr make(double threshold,
+                     unsigned int min_plateau,
+                     bool log = false,
+                     bool debug = false);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_ETHER_ENCAP_H */
+#endif /* INCLUDED_IEEE802_11AH_SYNC_SHORT_H */

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(ether_encap.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(280e9072b32d4443bd89d2ad5560bdea)                     */
+/* BINDTOOL_HEADER_FILE_HASH(8efbdf21a943b4e223d76153049349f1)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/ether_encap.h>
+#include <ieee802_11ah/ether_encap.h>
 // pydoc.h is automatically generated in the build directory
 #include <ether_encap_pydoc.h>
 
 void bind_ether_encap(py::module& m)
 {
 
-    using ether_encap    = ::gr::ieee802_11::ether_encap;
+    using ether_encap    = ::gr::ieee802_11ah::ether_encap;
 
 
     py::class_<ether_encap, gr::block, gr::basic_block,

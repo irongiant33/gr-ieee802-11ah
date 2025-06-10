@@ -513,7 +513,7 @@
     </param>
   </block>
   <block>
-    <key>ieee802_11_mac</key>
+    <key>ieee802_11ah_mac</key>
     <param>
       <key>bss_mac</key>
       <value>[0xff, 0xff, 0xff, 0xff, 0xff, 0xff]</value>
@@ -548,7 +548,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>ieee802_11_mac_0</value>
+      <value>ieee802_11ah_mac_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -962,7 +962,7 @@
   </connection>
   <connection>
     <source_block_id>foo_random_periodic_msg_source_0</source_block_id>
-    <sink_block_id>ieee802_11_mac_0</sink_block_id>
+    <sink_block_id>ieee802_11ah_mac_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>app in</sink_key>
   </connection>
@@ -973,7 +973,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>ieee802_11_mac_0</source_block_id>
+    <source_block_id>ieee802_11ah_mac_0</source_block_id>
     <sink_block_id>wifi_phy_hier_0</sink_block_id>
     <source_key>phy out</source_key>
     <sink_key>mac_in</sink_key>

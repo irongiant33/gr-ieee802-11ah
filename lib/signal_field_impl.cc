@@ -19,7 +19,7 @@
 #include "utils.h"
 #include <gnuradio/digital/lfsr.h>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 signal_field::sptr signal_field::make()
 {

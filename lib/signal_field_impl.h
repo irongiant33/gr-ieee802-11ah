@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INCLUDED_IEEE802_11_SIGNAL_FIELD_IMPL_H
-#define INCLUDED_IEEE802_11_SIGNAL_FIELD_IMPL_H
+#ifndef INCLUDED_IEEE802_11AH_SIGNAL_FIELD_IMPL_H
+#define INCLUDED_IEEE802_11AH_SIGNAL_FIELD_IMPL_H
 
 #include "utils.h"
-#include <ieee802_11/signal_field.h>
+#include <ieee802_11ah/signal_field.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 class signal_field_impl : public signal_field
 {
@@ -40,7 +40,7 @@ private:
     void generate_signal_field(char* out, frame_param& frame, ofdm_param& ofdm);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_SIGNAL_FIELD_IMPL_H */
+#endif /* INCLUDED_IEEE802_11AH_SIGNAL_FIELD_IMPL_H */

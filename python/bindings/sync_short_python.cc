@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(sync_short.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(ce2bf4884eae2d4c7695586469e38b17)                     */
+/* BINDTOOL_HEADER_FILE_HASH(fb20523feb70f66aa134d17fcb7d0dbd)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/sync_short.h>
+#include <ieee802_11ah/sync_short.h>
 // pydoc.h is automatically generated in the build directory
 #include <sync_short_pydoc.h>
 
 void bind_sync_short(py::module& m)
 {
 
-    using sync_short    = ::gr::ieee802_11::sync_short;
+    using sync_short    = ::gr::ieee802_11ah::sync_short;
 
 
     py::class_<sync_short, gr::block, gr::basic_block,

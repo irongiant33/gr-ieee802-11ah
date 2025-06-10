@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "utils.h"
-#include <ieee802_11/parse_mac.h>
+#include <ieee802_11ah/parse_mac.h>
 
 #include <gnuradio/block_detail.h>
 #include <gnuradio/io_signature.h>
 #include <string>
 #include <iomanip>
 
-using namespace gr::ieee802_11;
+using namespace gr::ieee802_11ah;
 
 class parse_mac_impl : public parse_mac
 {

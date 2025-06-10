@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(parse_mac.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(ebc81ff01bea127fd4abde631ac5f0f3)                     */
+/* BINDTOOL_HEADER_FILE_HASH(375e7344cf05c0ec6bee9a7925265e85)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,14 +23,14 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/parse_mac.h>
+#include <ieee802_11ah/parse_mac.h>
 // pydoc.h is automatically generated in the build directory
 #include <parse_mac_pydoc.h>
 
 void bind_parse_mac(py::module& m)
 {
 
-    using parse_mac    = ::gr::ieee802_11::parse_mac;
+    using parse_mac    = ::gr::ieee802_11ah::parse_mac;
 
 
     py::class_<parse_mac, gr::block, gr::basic_block,

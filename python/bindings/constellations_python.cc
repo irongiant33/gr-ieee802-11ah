@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(constellations.h)                                        */
-/* BINDTOOL_HEADER_FILE_HASH(b80d50dfe0fc254d8d6101aee3d2bcad)                     */
+/* BINDTOOL_HEADER_FILE_HASH(645465a1a98c96e2d9e8a68f929a4c9b)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -23,17 +23,17 @@
 
 namespace py = pybind11;
 
-#include <ieee802_11/constellations.h>
+#include <ieee802_11ah/constellations.h>
 // pydoc.h is automatically generated in the build directory
 #include <constellations_pydoc.h>
 
 void bind_constellations(py::module& m)
 {
 
-    using constellation_bpsk    = ::gr::ieee802_11::constellation_bpsk;
-    using constellation_qpsk    = ::gr::ieee802_11::constellation_qpsk;
-    using constellation_16qam    = ::gr::ieee802_11::constellation_16qam;
-    using constellation_64qam    = ::gr::ieee802_11::constellation_64qam;
+    using constellation_bpsk    = ::gr::ieee802_11ah::constellation_bpsk;
+    using constellation_qpsk    = ::gr::ieee802_11ah::constellation_qpsk;
+    using constellation_16qam    = ::gr::ieee802_11ah::constellation_16qam;
+    using constellation_64qam    = ::gr::ieee802_11ah::constellation_64qam;
 
 
     py::class_<constellation_bpsk, gr::digital::constellation,

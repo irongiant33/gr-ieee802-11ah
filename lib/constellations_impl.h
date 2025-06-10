@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_CONSTELLATIONS_IMPL_H
-#define INCLUDED_IEEE802_11_CONSTELLATIONS_IMPL_H
+#ifndef INCLUDED_IEEE802_11AH_CONSTELLATIONS_IMPL_H
+#define INCLUDED_IEEE802_11AH_CONSTELLATIONS_IMPL_H
 
-#include <ieee802_11/constellations.h>
+#include <ieee802_11ah/constellations.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
 class constellation_bpsk_impl : public constellation_bpsk
 {
@@ -62,7 +62,7 @@ public:
 };
 
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_CONSTELLATIONS_IMPL_H */
+#endif /* INCLUDED_IEEE802_11AH_CONSTELLATIONS_IMPL_H */

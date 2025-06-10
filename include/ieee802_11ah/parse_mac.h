@@ -14,23 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef INCLUDED_IEEE802_11_PARSE_MAC_H
-#define INCLUDED_IEEE802_11_PARSE_MAC_H
+#ifndef INCLUDED_IEEE802_11AH_PARSE_MAC_H
+#define INCLUDED_IEEE802_11AH_PARSE_MAC_H
 
 #include <gnuradio/block.h>
-#include <ieee802_11/api.h>
+#include <ieee802_11ah/api.h>
 
 namespace gr {
-namespace ieee802_11 {
+namespace ieee802_11ah {
 
-class IEEE802_11_API parse_mac : virtual public block
+class IEEE802_11AH_API parse_mac : virtual public block
 {
 public:
     typedef std::shared_ptr<parse_mac> sptr;
     static sptr make(bool log = false, bool debug = false);
 };
 
-} // namespace ieee802_11
+} // namespace ieee802_11ah
 } // namespace gr
 
-#endif /* INCLUDED_IEEE802_11_PARSE_MAC_H */
+#endif /* INCLUDED_IEEE802_11AH_PARSE_MAC_H */
