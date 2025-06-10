@@ -67,32 +67,11 @@ clean_build() {
     fi
 }
 
-# Function to check for and remove library artifacts
-check_and_remove_artifacts() {
-    LIB_DIR="/usr/local/lib"
-    ARTIFACT_PATTERN="libgnuradio-ieee802_11ah.so.*"
-    log "Checking for library artifacts in $LIB_DIR..."
-    if ls $LIB_DIR/$ARTIFACT_PATTERN >/dev/null 2>&1; then
-        log "Found the following artifacts:"
-        ls -l $LIB_DIR/$ARTIFACT_PATTERN
-        if confirm "Do you want to remove these artifacts?"; then
-            log "Removing artifacts (requires sudo)..."
-            sudo rm -f $LIB_DIR/$ARTIFACT_PATTERN || { echo "[ERROR] Failed to remove artifacts"; exit 1; }
-            log "Artifacts removed successfully."
-        else
-            log "Artifacts will not be removed."
-        fi
-    else
-        log "No artifacts matching $ARTIFACT_PATTERN found in $LIB_DIR."
-    fi
-}
-
 # Main script logic
 
 # If cleaning is requested, perform cleanup and artifact removal
 if [ "$CLEAN_BUILD" = true ]; then
     clean_build
-    check_and_remove_artifacts
 fi
 
 # Check if build directory exists, create it if necessary
