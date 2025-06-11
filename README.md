@@ -208,6 +208,6 @@ of the TUN/TAP interface is handled by the scripts in the ```apps``` folder.
 Credit to Bastian Bloessl and other key contributors to [gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11) for providing a key foundation for this repository. For further information on their lab, please checkout their project page
 [https://www.wime-project.net](https://www.wime-project.net)
 
-For a presentation on the contents of this repository, check out [this video from GNU Radio Conference 2024](https://youtu.be/x1QhxR8Mw5o?si=Vp9HJAgOjiAyoXFX). The video was pre-functioning transceiver chain, but some of the contents still apply. All of the files on IQ Engine were originally captured prior to this presentation. 
+[Presentation on gr-ieee802-11ah](https://www.youtube.com/watch?v=x1QhxR8Mw5o&t=1256s) at GNU Radio Conference 2024. This is prior to contributions by @neo-knight-td that enabled full transceiver functionality for 1MHz S1G PPDUs, so we will have to create another video to show how this solution works.
 
 Any issues or suggested improvements, such as support for other channel bandwidths, please raise an issue or initiate a pull request.

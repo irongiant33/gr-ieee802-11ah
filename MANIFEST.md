@@ -12,7 +12,6 @@ author:
 dependencies:
   - gnuradio (>= 3.10.0)
 repo: https://github.com/irongiant33/gr-ieee802-11ah.git
-stable_release: HEAD
 icon: https://raw.githubusercontent.com/irongiant33/gr-ieee802-11ah/master/wifi-halow.png
 ---
 
