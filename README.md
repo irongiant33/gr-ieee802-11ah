@@ -37,8 +37,9 @@ There are several ways to install GNU Radio. Please refer to [the GNU Radio inst
 
 ### gr-foo
 
-There are some non project specific GNU Radio blocks in `gr-foo` that are
-optional. For example the Wireshark connector. You can find these blocks at
+
+Some non project specific GNU Radio blocks from Bastian Bloessl's gr-foo repo are
+needed. For example the Wireshark connector. You can find these blocks at
 [https://github.com/bastibl/gr-foo](https://github.com/bastibl/gr-foo). They are
 installed with the typical command sequence:
 
@@ -53,20 +54,31 @@ sudo make install
 sudo ldconfig
 ```
 
-## Installation of the maint-3.10 branch
+## Installation
 
-First, clone the repository and switch to the maint-3.10 branch
+First, clone the repository :
 
 ```
-git clone git@github.com:irongiant33/gr-ieee802-11ah.git
+git clone https://github.com/irongiant33/gr-ieee802-11ah
 cd gr-ieee802-11ah
-git checkout maint-3.10
 ```
 
-Then, proceed with the installation of the the maint-3.10 branch by running the `build_and_install.sh` script:
+Then, proceed with the installation by running the `build_and_install.sh` script :
 
 ```
 ./build_and_install.sh
+```
+
+Alternatively, you can perform the installation manually using the following commands :
+
+```
+mkdir build
+cd build
+cmake ..
+make -j4
+sudo make install
+sudo ldconfig
+cd ..
 ```
 
 ### Adjust Maximum Shared Memory
@@ -127,7 +139,7 @@ can generate traces of the simulation. You can read about the logging feature
 and how to use it on the [GNU Radio
 Wiki](https://wiki.gnuradio.org/index.php/Logging).
 
-## RX from previously recorded samples
+## Decoding a WiFi HaLow communication
 
 There are three recordings of a 1 MHz HaLow transmission on [IQ Engine](https://www.iqengine.org/browser) within the "802.11ah WiFi HaLow" folder. These files are:
 - `1mhz-mcs0-chan43` [data](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs0-chan43.sigmf-data) and [meta](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs0-chan43.sigmf-meta)
