@@ -20,7 +20,7 @@
 category: common
 depends:
 - gnuradio
-description: An IEEE802.11ah (Wifi HaLow) receiver for GNU Radio that works with 1MHz PPDUs.
+description: An IEEE802.11ah (Wifi HaLow) transceiver for GNU Radio that works with 1MHz PPDUs.
 gitbranch: master
 inherit: cmake
 source: git+https://github.com/irongiant33/gr-ieee802-11ah.git

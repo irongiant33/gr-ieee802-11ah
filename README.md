@@ -1,20 +1,20 @@
 Hi!
 
-This is a IEEE 802.11ah (Wifi HaLow) transceiver for GNU Radio based on the gr-ieee802-11 repository. Interoperability was tested with the Alpha Halow U radios. The code can also be used in simulations.
-
+This is a IEEE 802.11ah (Wifi HaLow) transceiver for GNU Radio based on the gr-ieee802-11 repository. Interoperability was tested with the [Alfa Halow U radios](https://www.alfa.com.tw/products/halow-u?variant=39467228758088). The code can also be used in simulations.
 
 # Table of Contents
+
 1. [Development](#development)
 
-1. [Installation](#installation)
+2. [Installation](#installation)
 
-2. [Switching back to gr-ieee802-11](#switching-back-to-gr-ieee802-11)
+3. [Usage](#usage)
 
-1. [Usage](#usage)
+4. [Troubleshooting](#troubleshooting)
 
-1. [Troubleshooting](#troubleshooting)
+5. [Further information](#further-information)
 
-1. [Further information](#further-information)
+---
 
 # Development
 
@@ -23,57 +23,51 @@ These branches are supposed to be used with the corresponding GNU Radio
 branches. This means: the *maint-3.7* branch is compatible with GNU Radio 3.7,
 *maint-3.8* is compatible with GNU Radio 3.8, etc.
 
+This repository is based on [gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11), but due to the differences between 802.11ah and 802.11a/g/p in terms of FFT length, carrier allocator setup, and auto/cross correlation parameters, it did not make sense to integrate 802.11ah into `gr-ieee802-11`. Nonetheless, both repositories still work independently of one another. 
+
+---
 
 # Installation
 
-
 ## Dependencies
-
 
 ### GNU Radio
 
-There are several ways to install GNU Radio. You can use
-
-- [pybombs](http://gnuradio.org/redmine/projects/pybombs/wiki)
-- [pre-compiled binaries](http://gnuradio.org/redmine/projects/gnuradio/wiki/BinaryPackages)
-- [from source](http://gnuradio.org/redmine/projects/gnuradio/wiki/InstallingGRFromSource)
-
+There are several ways to install GNU Radio. Please refer to [the GNU Radio install wiki](https://wiki.gnuradio.org/index.php/InstallingGR)
 
 ### gr-foo
 
-I have some non project specific GNU Radio blocks in my gr-foo repo that are
-needed. For example the Wireshark connector. You can find these blocks at
+There are some non project specific GNU Radio blocks in `gr-foo` that are
+optional. For example the Wireshark connector. You can find these blocks at
 [https://github.com/bastibl/gr-foo](https://github.com/bastibl/gr-foo). They are
 installed with the typical command sequence:
 
-    git clone https://github.com/bastibl/gr-foo
-    cd gr-foo
-    mkdir build
-    cd build
-    cmake ..
-    make
-    sudo make install
-    sudo ldconfig
-
-
-## Installation of the maint-3.10-802-11-ah branch
-
-First, clone the repository and switch to the maint-3.10-802-11-ah branch
-
 ```
-git clone https://github.com/bastibl/gr-ieee802-11
-cd gr-ieee802-11
-git checkout maint-3.10-802-11-ah
+git clone https://github.com/bastibl/gr-foo
+cd gr-foo
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
+sudo ldconfig
 ```
 
-Then, proceed with the installation of the the maint-3.10-802-11-ah branch by running the ``build_and_install.sh`` script :
+## Installation of the maint-3.10 branch
+
+First, clone the repository and switch to the maint-3.10 branch
 
 ```
-build_and_install.sh
+git clone git@github.com:irongiant33/gr-ieee802-11ah.git
+cd gr-ieee802-11ah
+git checkout maint-3.10
 ```
 
-This script will make sure to uninstall any previous instance of gr-ieee802-11. It will also check for previous installation artifacts on your computer that may interfere with the proper working of maint-3.10-802-11-ah.
+Then, proceed with the installation of the the maint-3.10 branch by running the `build_and_install.sh` script:
 
+```
+./build_and_install.sh
+```
 
 ### Adjust Maximum Shared Memory
 
@@ -81,17 +75,17 @@ Since the transmitter is using the Tagged Stream blocks it has to store a
 complete frame in the buffer before processing it. The default maximum shared
 memory might not be enough on most Linux systems. It can be increased with
 
-    sudo sysctl -w kernel.shmmax=2147483648
-
+```
+sudo sysctl -w kernel.shmmax=2147483648
+```
 
 ### OFDM PHY
 
 The physical layer is encapsulated in a hierarchical block to allow for a
 clearer transceiver structure in GNU Radio Companion. This hierarchical block is
 not included in the installation process. You have to open
-```/examples/halow_phy_hier.grc``` with GNU Radio Companion and build it. This
+```/examples/halow_phy_hier.grc``` with GNU Radio Companion and "Generate the flow graph". This
 will install the block in ```~/.grc_gnuradio/```.
-
 
 ### Check message port connections
 
@@ -99,8 +93,7 @@ Sometime the connections between the message ports (the gray ones in GNU Radio
 Companion) break. Therefore, please open the flow graphs and assert that
 everything is connected. It should be pretty obvious how the blocks are supposed
 to be wired. Actually this should not happen anymore, so if your ports are still
-unconnected please drop me a mail.
-
+unconnected please raise an issue in this repository.
 
 ### Python OpenGL
 
@@ -111,11 +104,10 @@ version of the plot does not work for me.
 
 ### Run volk_profile
 
-volk_profile is part of GNU Radio. It benchmarks different SIMD implementations
+`volk_profile` is part of GNU Radio. It benchmarks different SIMD implementations
 on your PC and creates a configuration file that stores the fastest version of
 every function. This can speed up the computation considerably and is required
 in order to deal with the high rate of incoming samples.
-
 
 ### Calibrate your daughterboard
 
@@ -123,34 +115,48 @@ If you have a WBX, SBX, or CBX daughterboard you should calibrate it in order to
 minimize IQ imbalance and TX DC offsets. See the [application
 notes](http://files.ettus.com/manual/page_calibration.html).
 
+---
 
-# Switching back to gr-ieee802-11
+# Usage
 
-If you want to switch back to the gr-ieee802-11 branch, we recommend you to run the ``clean_and_uninstall.sh`` script first :
+## Simulation
 
-```
-./clean_and_uninstall.sh
-```
+The loopback flow graph should give you an idea of how simulations can be
+conducted. To ease use, most blocks have debugging and logging capabilities that
+can generate traces of the simulation. You can read about the logging feature
+and how to use it on the [GNU Radio
+Wiki](https://wiki.gnuradio.org/index.php/Logging).
 
-This script will make sure to uninstall maint-3.10-802-11-ah properely so you can start with a fresh setup for the installation of gr-ieee802-11.
+## RX from previously recorded samples
 
-After, switch back to the gr-ieee802-11 branch :
+There are three recordings of a 1 MHz HaLow transmission on [IQ Engine](https://www.iqengine.org/browser) within the "802.11ah WiFi HaLow" folder. These files are:
+- `1mhz-mcs0-chan43` [data](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs0-chan43.sigmf-data) and [meta](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs0-chan43.sigmf-meta)
+- `1mhz-mcs1-chan43` [data](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs1-chan43.sigmf-data) and [meta](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs1-chan43.sigmf-meta)
+- `1mhz-mcs10-chan43` [data](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs10-chan43.sigmf-data) and [meta](https://www.iqengine.org/api/datasources/gnuradio/iqengine/802.11ah%20WiFi%20HaLow/1mhz-mcs10-chan43.sigmf-meta)
 
-```
-git checkout maint-3.10-802-11-ah
-```
+You can download these files and change the `filepath` variable within `halow_rx.grc` to the respective download location in order to analyze the contents of the transmissions. 
 
-From there, follow the installation guidelines of the README.
+## Unidirectional communication
 
-# Checking your installation
+As first over the air test I recommend to try `halow_rx.grc` and
+`halow_tx.grc`. You do not need a USRP board to get these flowgraphs to work, they should be compatible
+with any SDR that supports TX and/or RX. Just open the flow graphs in GNU Radio companion and execute
+them. If it does not work out of the box, try to play around with the gain. If
+everything works as intended you should see similar output as in the
+`halow_loopback.grc` example.
+
+---
+
+# Troubleshooting
+
+## Checking your installation
 
 As a first step I recommend to test the ```halow_loopback.grc``` flow graph. This
 flow graph does not need any hardware and allows you to ensure that the software
 part is installed correctly. So open the flow graph and run it. If everything
 works as intended you should see some decoded packets on the console.
 
-
-## Troubleshooting
+## GNU Radio Cannot Find Blocks
 
 If GRC complains that it can't find some blocks (other than performance counters
 and hierarchical blocks) like
@@ -169,34 +175,12 @@ by creating/adding to your ```~/.gnuradio/config.conf``` something like
 
 But with the directories that match your installation.
 
-
-# Usage
-
-
-## Simulation
-
-The loopback flow graph should give you an idea of how simulations can be
-conducted. To ease use, most blocks have debugging and logging capabilities that
-can generate traces of the simulation. You can read about the logging feature
-and how to use it on the [GNU Radio
-Wiki](https://wiki.gnuradio.org/index.php/Logging).
-
-
-## Unidirectional communication
-
-As first over the air test I recommend to try ```halow_rx.grc``` and
-```halow_tx.grc```. Just open the flow graphs in GNU Radio companion and execute
-them. If it does not work out of the box, try to play around with the gain. If
-everything works as intended you should see similar output as in the
-```halow_loopback.grc``` example.
-
-
-# Troubleshooting
+## Miscellaneous
 
 - Please check compile and installation logs. They might contain interesting
   information.
 - Did you calibrate your daughterboard?
-- Did you run volk_profile?
+- Did you run `volk_profile`?
 - Did you try different gain settings?
 - Did you close the case of the devices?
 - Did you try real-time priority?
@@ -208,8 +192,8 @@ everything works as intended you should see similar output as in the
   flow graph.
 - The message
 
-    You must now use ifconfig to set its IP address. E.g.,
-    $ sudo ifconfig tap0 192.168.200.1
+>    You must now use ifconfig to set its IP address. E.g.,
+>    `$ sudo ifconfig tap0 192.168.200.1`
 
 is normal and is output by the TUN/Tap Block during startup. The configuration
 of the TUN/TAP interface is handled by the scripts in the ```apps``` folder.
@@ -219,8 +203,11 @@ of the TUN/TAP interface is handled by the scripts in the ```apps``` folder.
   made the sysconf changes recommended by Ettus. Did you try to connect you PC
   directly to the USRP without a switch in between?
 
-
 # Further information
 
-For further information please checkout our project page
+Credit to Bastian Bloessl and other key contributors to [gr-ieee802-11](https://github.com/bastibl/gr-ieee802-11) for providing a key foundation for this repository. For further information on their lab, please checkout their project page
 [https://www.wime-project.net](https://www.wime-project.net)
+
+For a presentation on the contents of this repository, check out [this video from GNU Radio Conference 2024](https://youtu.be/x1QhxR8Mw5o?si=Vp9HJAgOjiAyoXFX). The video was pre-functioning transceiver chain, but some of the contents still apply. All of the files on IQ Engine were originally captured prior to this presentation. 
+
+Any issues or suggested improvements, such as support for other channel bandwidths, please raise an issue or initiate a pull request.

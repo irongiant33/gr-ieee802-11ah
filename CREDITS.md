@@ -17,8 +17,8 @@ The OpenSouce 802.11ah Transceiver.
 ### Author : 
 
 - Sam Miller
-    - irongiant33
-    - @samiammiller
+    - irongiant33 on GitHub
+    - @samiammiller on X.com
 
 ### Contributors : 
 
